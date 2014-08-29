@@ -1,0 +1,66 @@
+MPLINK 5.01, LINKER
+Linker Map File - Created Thu May 15 21:49:26 2014
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x000130
+.config_2007_/HOME/LUIS/PROJETOS/MICRO/3-TRAB       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x00009b      
+                            0x002007    0x002007      
+            154 out of 4230 program addresses used, program memory utilization is 3%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+             configura_ad   0x000061    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+            configura_led   0x000083    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+         configura_serial   0x00003e    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+  converte_ad_temperatura   0x000096    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+              desliga_led   0x000091    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+           escrita_serial   0x000056    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+         espera_conversao   0x000071    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+    espera_escrita_serial   0x000058    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+    espera_leitura_serial   0x00004d    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                espera_pc   0x000009    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                    final   0x000039    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+               leitura_ad   0x00006e    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+           leitura_serial   0x00004b    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                 liga_led   0x00008c    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+          loop_leitura_ad   0x00001d    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                    start   0x000005    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    start   0x000005    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                espera_pc   0x000009    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+          loop_leitura_ad   0x00001d    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                    final   0x000039    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+         configura_serial   0x00003e    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+           leitura_serial   0x00004b    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+    espera_leitura_serial   0x00004d    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+           escrita_serial   0x000056    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+    espera_escrita_serial   0x000058    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+             configura_ad   0x000061    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+               leitura_ad   0x00006e    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+         espera_conversao   0x000071    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+            configura_led   0x000083    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+                 liga_led   0x00008c    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+              desliga_led   0x000091    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+  converte_ad_temperatura   0x000096    program     static /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm
+
+

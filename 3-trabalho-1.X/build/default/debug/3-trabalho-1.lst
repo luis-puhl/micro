@@ -1,0 +1,829 @@
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;
+                      00002 ;* Copyright 2014 Luís Puhl <luispuhl@gmail.com>
+                      00003 ;*
+                      00004 ;* Redistribution and use in source and binary forms, with or without
+                      00005 ;* modification, are permitted provided that the following conditions are
+                      00006 ;* met:
+                      00007 ;*
+                      00008 ;* * Redistributions of source code must retain the above copyright
+                      00009 ;*   notice, this list of conditions and the following disclaimer.
+                      00010 ;* * Redistributions in binary form must reproduce the above
+                      00011 ;*   copyright notice, this list of conditions and the following disclaimer
+                      00012 ;*   in the documentation and/or other materials provided with the
+                      00013 ;*   distribution.
+                      00014 ;* * Neither the name of the  nor the names of its
+                      00015 ;*   contributors may be used to endorse or promote products derived from
+                      00016 ;*   this software without specific prior written permission.
+                      00017 ;*
+                      00018 ;* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+                      00019 ;* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+                      00020 ;* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+                      00021 ;* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+                      00022 ;* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+                      00023 ;* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+                      00024 ;* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+                      00025 ;* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+                      00026 ;* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+                      00027 ;* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+                      00028 ;* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                      00029 ;*
+                      00030 ;*******************************************************************************
+                      00031 ;                                                                                                       
+                                                                              *
+                      00032 ;       Filename: 3-trabalho-1.asm                                                                      
+                                                    *
+                      00033 ;       Date: 13/05/2014                                                                                
+                                                              *
+                      00034 ;       File Version: 1                                                                                 
+                                                       *
+                      00035 ;       Author:  Luís Puhl                                                                             
+                                                            *
+                      00036 ;       Company: UNESP                                                                                  
+                                                            *
+                      00037 ;       Description: trabalho 1 microcontroladores 2014                                            *
+                      00038 ;                                                                                                       
+                                                                              *
+                      00039 ;*******************************************************************************
+                      00040 ;                                                                                                       
+                                                                              *
+                      00041 ;       Notes: In the MPLAB X Help, refer to the MPASM Assembler documentation  *
+                      00042 ;       for information on assembly instructions.                                                       
+                                     *
+                      00043 ;                                                                                                       
+                                                                              *
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00044 ;*******************************************************************************
+                      00045 ;                                                                                                       
+                                                                              *
+                      00046 ;       Known Issues: This template is designed for relocatable code.  As such,   *
+                      00047 ;       build errors such as "Directive only allowed when generating an object  *
+                      00048 ;       file" will result when the 'Build in Absolute Mode' checkbox is selected  *
+                      00049 ;       in the project properties.  Designing code in absolute mode is                  *
+                      00050 ;       antiquated - use relocatable mode.                                                              
+                                            *
+                      00051 ;                                                                                                       
+                                                                              *
+                      00052 ;*******************************************************************************
+                      00053 ;                                                                                                       
+                                                                              *
+                      00054 ;       Revision History:                                                                               
+                                                             *
+                      00055 ;                                                                                                       
+                                                                              *
+                      00056 ;*******************************************************************************
+                      00057 
+                      00058 
+                      00059 
+                      00060 ;*******************************************************************************
+                      00061 ; Processor Inclusion
+                      00062 ;
+                      00063 ; TODO Step #1 Open the task list under Window > Tasks.  Include your
+                      00064 ; device .inc file - e.g. #include <device_name>.inc.  Available
+                      00065 ; include files are in C:\Program Files\Microchip\MPLABX\mpasmx
+                      00066 ; assuming the default installation path for MPLAB X.  You may manually find
+                      00067 ; the appropriate include file for your device here and include it, or
+                      00068 ; simply copy the include generated by the configuration bits
+                      00069 ; generator (see Step #2).
+                      00070 ;
+                      00071 ;*******************************************************************************
+                      00072 
+                      00073 ; TODO INSERT INCLUDE CODE HERE
+                      00074 #include<p16f873.inc> ; define o pic a utilizar
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F873 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00500         LIST
+                      00075 
+                      00076 ;*******************************************************************************
+                      00077 ;
+                      00078 ; TODO Step #2 - Configuration Word Setup
+                      00079 ;
+                      00080 ; The 'CONFIG' directive is used to embed the configuration word within the
+                      00081 ; .asm file. MPLAB X requires users to embed their configuration words
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00082 ; into source code.  See the device datasheet for additional information
+                      00083 ; on configuration word settings.  Device configuration bits descriptions
+                      00084 ; are in C:\Program Files\Microchip\MPLABX\mpasmx\P<device_name>.inc
+                      00085 ; (may change depending on your MPLAB X installation directory).
+                      00086 ;
+                      00087 ; MPLAB X has a feature which generates configuration bits source code.  Go to
+                      00088 ; Window > PIC Memory Views > Configuration Bits.  Configure each field as
+                      00089 ; needed and select 'Generate Source Code to Output'.  The resulting code which
+                      00090 ; appears in the 'Output Window' > 'Config Bits Source' tab may be copied
+                      00091 ; below.
+                      00092 ;
+                      00093 ;*******************************************************************************
+                      00094 
+                      00095 ; TODO INSERT CONFIG HERE
+                      00096 ; constantes
+                      00097 ;VAL_PC_ATIVACAO        EQU     123
+                      00098 ;TEMP_ATIVACAO  EQU     25
+                      00099 
+                      00100 ;*******************************************************************************
+                      00101 ;
+                      00102 ; TODO Step #3 - Variable Definitions
+                      00103 ;
+                      00104 ; Refer to datasheet for available data memory (RAM) organization assuming
+                      00105 ; relocatible code organization (which is an option in project
+                      00106 ; properties > mpasm (Global Options)).  Absolute mode generally should
+                      00107 ; be used sparingly.
+                      00108 ;
+                      00109 ; Example of using GPR Uninitialized Data
+                      00110 ;
+                      00111 ;   GPR_VAR             UDATA
+                      00112 ;   MYVAR1               RES            1         ; User variable linker places
+                      00113 ;   MYVAR2               RES            1         ; User variable linker places
+                      00114 ;   MYVAR3               RES            1         ; User variable linker places
+                      00115 ;
+                      00116 ;   ; Example of using Access Uninitialized Data Section (when available)
+                      00117 ;   ; The variables for the context saving in the device datasheet may need
+                      00118 ;   ; memory reserved here.
+                      00119 ;   INT_VAR             UDATA_ACS
+                      00120 ;   W_TEMP               RES            1         ; w register for context saving (ACCESS)
+                      00121 ;   STATUS_TEMP RES             1         ; status used for context saving
+                      00122 ;   BSR_TEMP       RES          1         ; bank select used for ISR context saving
+                      00123 ;
+                      00124 ;*******************************************************************************
+                      00125 
+                      00126 ; TODO PLACE VARIABLE DEFINITIONS GO HERE
+                      00127         CBLOCK 0X20
+                      00128                 ; variavies
+  00000020            00129                 byte_enviar_serial              ;0x20
+  00000021            00130                 byte_recebido_serial    ;0x21
+  00000022            00131                 ad_h                                    ;0x22
+  00000023            00132                 ad_l                                    ;0x23
+  00000024            00133                 temperatura                             ;0x24
+                      00134         ENDC
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00135 
+                      00136 ;*******************************************************************************
+                      00137 ; Reset Vector
+                      00138 ;*******************************************************************************
+                      00139 
+                      00140 
+                      00141 ;RES_VECT  CODE 0x0000                  ; processor reset vector
+                      00142         ORG 0
+0000   2???           00143         GOTO    start                              ; go to beginning of program
+                      00144 
+                      00145 ;*******************************************************************************
+                      00146 ; TODO Step #4 - Interrupt Service Routines
+                      00147 ;
+                      00148 ; There are a few different ways to structure interrupt routines in the 8
+                      00149 ; bit device families.  On PIC18's the high priority and low priority
+                      00150 ; interrupts are located at 0x0008 and 0x0018, respectively.  On PIC16's and
+                      00151 ; lower the interrupt is at 0x0004.  Between device families there is subtle
+                      00152 ; variation in the both the hardware supporting the ISR (for restoring
+                      00153 ; interrupt context) as well as the software used to restore the context
+                      00154 ; (without corrupting the STATUS bits).
+                      00155 ;
+                      00156 ; General formats are shown below in relocatible format.
+                      00157 ;
+                      00158 ;------------------------------PIC16's and below--------------------------------
+                      00159 ;
+                      00160 ; ISR      CODE 0x0004             ; interrupt vector location
+                      00161 ;
+                      00162 ;        <Search the device datasheet for 'context' and copy interrupt
+                      00163 ;        context saving code here.  Older devices need context saving code,
+                      00164 ;        but newer devices like the 16F#### don't need context saving code.>
+                      00165 ;
+                      00166 ;        RETFIE
+                      00167 ;
+                      00168 ;----------------------------------PIC18's--------------------------------------
+                      00169 ;
+                      00170 ; ISRHV  CODE   0x0008
+                      00171 ;        GOTO   HIGH_ISR
+                      00172 ; ISRLV  CODE   0x0018
+                      00173 ;        GOTO   LOW_ISR
+                      00174 ;
+                      00175 ; ISRH    CODE                                   ; let linker place high ISR routine
+                      00176 ; HIGH_ISR
+                      00177 ;        <Insert High Priority ISR Here - no SW context saving>
+                      00178 ;        RETFIE  FAST
+                      00179 ;
+                      00180 ; ISRL    CODE                                   ; let linker place low ISR routine
+                      00181 ; LOW_ISR
+                      00182 ;          <Search the device datasheet for 'context' and copy interrupt
+                      00183 ;          context saving code here>
+                      00184 ;        RETFIE
+                      00185 ;
+                      00186 ;*******************************************************************************
+                      00187 
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00188 ; TODO INSERT ISR HERE
+                      00189         ORG      4
+                      00190         ;
+0004   0009           00191         RETFIE
+                      00192 
+                      00193 ;*******************************************************************************
+                      00194 ; MAIN PROGRAM
+                      00195 ;*******************************************************************************
+                      00196 
+                      00197 ;MAIN_PROG CODE                                   ; let linker place main program
+                      00198 
+0005                  00199 start:
+0005   2???           00200         CALL    configura_serial
+0006   2???           00201         CALL    configura_ad
+0007   2???           00202         CALL    configura_led
+                      00203 
+                      00204 
+0008                  00205 run:
+0008                  00206 espera_pc:
+0008   2???           00207         CALL    leitura_serial                  ; executa leitura serial
+Message[305]: Using default destination of 1 (file).
+0009   08A1           00208         MOVF    byte_recebido_serial    ;
+000A   3C7B           00209         SUBLW   0x7b                                    ; compara com o valor esperado 123 decimal (0x7B
+                             hex)
+000B   1D03           00210         BTFSS   STATUS, Z                               ; byte_recebido == W ?
+000C   2???           00211         GOTO    espera_pc                               ; false
+                      00212         ;true
+                      00213 
+000D   2???           00214         CALL    leitura_ad                              ; executa leitura AD
+                      00215         ; parte alta
+                      00216         ;BANKSEL ad_h
+000E   1283           00217         BCF             STATUS,         RP0
+000F   1303           00218         BCF             STATUS,         RP1
+Message[305]: Using default destination of 1 (file).
+0010   08A2           00219         MOVF    ad_h                                    ; pega parte alta do AD
+0011   00A0           00220         MOVWF   byte_enviar_serial              ; prepara envio
+0012   2???           00221         CALL    escrita_serial                  ; envia
+                      00222         ; parte baixa
+Message[305]: Using default destination of 1 (file).
+0013   08A3           00223         MOVF    ad_l                                    ; pega parte baixa do AD
+0014   00A0           00224         MOVWF   byte_enviar_serial              ; prepara envio
+0015   2???           00225         CALL    escrita_serial                  ; envia
+                      00226 
+                      00227         ; verifica o valor para acender o led
+0016   2???           00228         CALL    converte_ad_temperatura
+Message[305]: Using default destination of 1 (file).
+0017   08A4           00229         MOVF    temperatura
+                      00230         ;SUBLW  TEMP_ATIVACAO                   ; compara com a temperatura esperadas
+0018   3C19           00231         SUBLW   0x19                                    ; compara com a temperatura esperadas 25 = 0x19
+0019   1C03           00232         BTFSS   STATUS, C                               ; byte_recebido > W ?
+001A   2???           00233         CALL    liga_led                                ; true
+                      00234 
+001B   2???           00235         GOTO    $                                                 ; loop forever
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00236 
+                      00237 ; -------------------------------------------------------------------------
+                      00238 ; ------------------------------ FUNCOES ----------------------------------
+                      00239 ; -------------------------------------------------------------------------
+                      00240 
+                      00241 ; ------------------------------ SECAO SERIAL ----------------------------------
+001C                  00242 configura_serial:
+                      00243                 ; TXSTA = 0010 0110
+001C   1683 1303      00244                 BANKSEL TXSTA
+001E   3026           00245                 MOVLW   B'00100110'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001F   0098           00246                 MOVWF   TXSTA
+                      00247 
+                      00248                 ; RCSTA = 1001 0000
+0020   1283 1303      00249                 BANKSEL RCSTA
+0022   3090           00250                 MOVLW   B'10010000'
+0023   0098           00251                 MOVWF   RCSTA
+                      00252 
+                      00253                 ; SPBRG = 25
+0024   1683 1303      00254                 BANKSEL SPBRG
+0026   3025           00255                 MOVLW   25
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   0099           00256                 MOVWF   SPBRG
+0028   0008           00257         RETURN
+0029                  00258 leitura_serial:
+0029   1283 1303      00259                 BANKSEL PIR1
+                      00260                 ; registrador PIR1 contem as flags individuais de cada uma das interrupcoes perifericas
+                      00261                 ; bit RCIF indica se o buffer de entrada esta cheio (entrada serial)
+002B                  00262 espera_leitura_serial:
+002B   1E8C           00263                 BTFSS   PIR1,   RCIF                    ; se bit RCIF do registrador PIR1, ou seja, se t
+                            em coisa a ler
+002C   2???           00264                 GOTO    espera_leitura_serial   ; nao chegou byte
+Message[305]: Using default destination of 1 (file).
+002D   089A           00265                 MOVF    RCREG                                   ; chegou byte
+                      00266                 ;BANKSEL        byte_recebido_serial
+002E   1283           00267                 BCF             STATUS,         RP0
+002F   1303           00268                 BCF             STATUS,         RP1
+                      00269                 ;MOVLW  0x7b ; DEBUG
+0030   00A1           00270                 MOVWF   byte_recebido_serial
+0031   0008           00271         RETURN
+0032                  00272 escrita_serial:
+                      00273                 ; TXSTA:        transmit status and control register
+                      00274                 ; TRMT:  bit de buffer de escrita cheio
+0032   1683 1303      00275                 BANKSEL TXSTA
+                      00276                 ; caso ainda nao tenha enviado o que esta no buffer, espera o envio (anterior)
+0034                  00277 espera_escrita_serial:
+                      00278                 ;TRMT: Transmit Shift Register Status bit
+                      00279                 ;1 = TSR empty
+                      00280                 ;0 = TSR full
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0034   1C98           00281                 BTFSS   TXSTA, TRMT                             ; TRMT == 1? ;
+0035   2???           00282                 GOTO    espera_escrita_serial   ; buffer cheio, espere
+0036   1283 1303      00283                 BANKSEL TXREG
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[305]: Using default destination of 1 (file).
+0038   08A0           00284                 MOVF    byte_enviar_serial              ; pega a variavel
+0039   0099           00285                 MOVWF   TXREG                                   ; escreve a variavel para o buffer
+003A   0008           00286         RETURN
+                      00287 ; ------------------------------ SECAO AD --------------------------------------
+003B                  00288 configura_ad:
+                      00289                 ; PORTA = analogico em AN0
+                      00290                 ; TRISA = 0000 0001
+003B   1683 1303      00291                 BANKSEL TRISA
+003D   3001           00292                 MOVLW   B'00000001'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+003E   0085           00293                 MOVWF   TRISA
+                      00294 
+                      00295                 ; ADCON0 = 01 000 0 0 1
+003F   1283 1303      00296                 BANKSEL ADCON0
+0041   3041           00297                 MOVLW   B'01000001'
+0042   009F           00298                 MOVWF   ADCON0
+                      00299 
+                      00300                 ; ADCON1 = 0 000 0000
+                      00301                 ; ADFM = 0: ajuste a esquerda
+                      00302                 ; XXX
+                      00303                 ; PCFG = 0000: configuracao geral (muitos bits)
+0043   1683 1303      00304                 BANKSEL ADCON1
+0045   3000           00305                 MOVLW   B'00000000'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0046   009F           00306                 MOVWF   ADCON1
+0047   0008           00307         RETURN
+0048                  00308 leitura_ad:
+                      00309                 ; inicia conversao
+0048   1283 1303      00310                 BANKSEL ADCON0
+004A   151F           00311                 BSF             ADCON0, GO_DONE         ; inicia a corvesao
+                      00312 
+                      00313                 ; espera conversao
+004B                  00314 espera_conversao:;{;{
+004B   0000           00315                 NOP
+004C   0000           00316                 NOP
+004D   0000           00317                 NOP
+004E   191F           00318                 BTFSC   ADCON0, GO_DONE         ; bit 2 = GO/DONE,
+004F   2???           00319                 GOTO    espera_conversao        ; se nao pronto
+                      00320                 ; se pronto
+                      00321 
+                      00322                 ; copia os valores
+                      00323                 ; 0X3E em ADRESH = 25 Cº
+                      00324                 ; 0X41 em ADRESH = 26 Cº
+0050   1283 1303      00325                 BANKSEL ADRESH
+Message[305]: Using default destination of 1 (file).
+0052   089E           00326                 MOVF    ADRESH
+                      00327                 ;MOVLW  0X41 ; DEBUG
+                      00328                 ;BANKSEL        ad_h
+0053   1003           00329                 BCF             STATUS, RB0
+0054   1083           00330                 BCF             STATUS, RB1
+                      00331 
+0055   00A2           00332                 MOVWF   ad_h
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0056   1683 1303      00333                 BANKSEL ADRESL
+Message[305]: Using default destination of 1 (file).
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0058   089E           00334                 MOVF    ADRESL
+                      00335                 ;BANKSEL        ad_l
+0059   1003           00336                 BCF             STATUS, RB0
+005A   1083           00337                 BCF             STATUS, RB1
+                      00338 
+005B   00A3           00339                 MOVWF   ad_l
+005C   0008           00340         RETURN
+                      00341 ;}
+                      00342 ; ------------------------------ SECAO LED ------------------------------------
+005D                  00343 configura_led:
+005D   1683 1303      00344                 BANKSEL TRISB
+005F   3000           00345                 MOVLW   B'00000000'                      ; configura todas as portas RB para output
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0060   0086           00346                 MOVWF   TRISB
+                      00347 
+                      00348                 ; desligar todas as saidas da porta b
+0061   1283 1303      00349                 BANKSEL PORTB
+0063   3000           00350                 MOVLW   B'00000000'
+0064   0086           00351                 MOVWF   PORTB
+0065   0008           00352         RETURN
+0066                  00353 liga_led:
+0066   1283 1303      00354                 BANKSEL PORTB
+0068   3002           00355                 MOVLW   B'00000010'                      ; liga o pino RB1 somente
+0069   0086           00356                 MOVWF   PORTB
+006A   0008           00357         RETURN
+006B                  00358 desliga_led:
+006B   1283 1303      00359                 BANKSEL PORTB
+006D   3000           00360                 MOVLW   B'00000000'                      ; desliga todos os pinos port B
+006E   0086           00361                 MOVWF   PORTB
+006F   0008           00362         RETURN
+0070                  00363 converte_ad_temperatura:
+                      00364                 ; divide por 10
+                      00365                 ; considerando que 2 bits menos significativos estao em ADRESL (ad_l)
+                      00366                 ;BANKSEL        ad_h
+0070   1283           00367                 BCF             STATUS,         RP0
+0071   1303           00368                 BCF             STATUS,         RP1
+0072   0C22           00369                 RRF             ad_h,   0                       ; rotaciona uma casa para a direita, arm
+                            azena em W
+0073   00A4           00370                 MOVWF   temperatura
+0074   0008           00371         RETURN
+                      00372 
+                      00373         END
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_.org_1_001B                      0000001B
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_WRT_OFF                          00003DFF
+_WRT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F873                          00000001
+__DEBUG                           
+ad_h                              00000022
+ad_l                              00000023
+byte_enviar_serial                00000020
+byte_recebido_serial              00000021
+configura_ad                      0000003B
+configura_led                     0000005D
+configura_serial                  0000001C
+converte_ad_temperatura           00000070
+desliga_led                       0000006B
+escrita_serial                    00000032
+espera_conversao                  0000004B
+espera_escrita_serial             00000034
+espera_leitura_serial             0000002B
+espera_pc                         00000008
+leitura_ad                        00000048
+leitura_serial                    00000029
+liga_led                          00000066
+run                               00000008
+start                             00000005
+temperatura                       00000024
+
+MPASM 5.55  /HOME/LUIS/PROJETOS/MICRO/3-TRAB   5-14-2014  2:47:38         PAGE 15
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    15 reported,     0 suppressed
+
+

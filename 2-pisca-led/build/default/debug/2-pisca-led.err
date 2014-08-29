@@ -1,0 +1,2 @@
+Message[302] /home/luis/projetos/micro/2-pisca-led/2-pisca-led.asm 18 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[205] /home/luis/projetos/micro/2-pisca-led/2-pisca-led.asm 43 : Found directive in column 1. (END)

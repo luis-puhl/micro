@@ -1,0 +1,12 @@
+Message[301] /home/luis/Installs/mplabx/mpasmx/p16f873.inc 33 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 50 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 70 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 100 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 115 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 128 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 150 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 157 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 161 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 177 : Using default destination of 1 (file).
+Message[305] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 179 : Using default destination of 1 (file).
+Message[305] /home/luis/projetos/micro/3-trabalho-1.X/3-trabalho-1.asm 181 : Using default destination of 1 (file).
