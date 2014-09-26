@@ -1,6 +1,11 @@
 Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
-Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 20 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 46 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 66 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 95 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 129 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 28 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 71 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 75 : Using default destination of 1 (file).
+Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 110 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 130 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 159 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 193 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 236 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 238 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6-t2/geradorFrequencia.asm 240 : Using default destination of 1 (file).

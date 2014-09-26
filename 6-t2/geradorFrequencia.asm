@@ -4,6 +4,14 @@
 	#define DEBUG					0x1
 	#define byte_recebido_serial	0x21
 	#define byte_enviar_serial		0x22
+	#define th						0x23
+	#define tl						0x24
+
+	#define counter					0x25
+
+	#define	count_l					0x26
+	#define	count_h					0x27
+	#define	count_uh				0x28
 
 	ORG 0
 	GOTO	start				   ; go to beginning of program
@@ -11,9 +19,15 @@
 	; INTERRUPCOES :
 	; timer
 
+end_int:
 	RETFIE
 
 start:
+	MOVLW	0x10
+	MOVWF	th
+	MOVWF	tl
+	MOVWF	counter
+
 	; configura todas as portas RB para output
 	BANKSEL TRISB
 	MOVLW   B'00000000'	 
@@ -24,10 +38,70 @@ start:
 	MOVLW   0xFF
 	MOVWF   PORTB
 
+	; outras configuracoes
 	CALL	configura_serial
-	CALL	configura_timer
+	;CALL	configura_timer
+	
+	GOTO	loop_pulsos
+
+espera_valor:
+	; espera os dados da serial
+	CALL	leitura_serial
+	MOVF	byte_recebido_serial, W
+
+	; menor que 78, espera outro
+    SUBLW	D'77'
+	BTFSC	STATUS, C
+		GOTO	espera_valor
+	; maior que 124, espera outro
+	MOVF	th, w
+	SUBLW	D'124'
+	BTFSS	STATUS, C
+		GOTO	espera_valor
+	
+	; faz aritimética
+	MOVWF	th							; TH = valorRecebido
+	MOVLW	d'125'
+	SUBWF	byte_recebido_serial, W		; W= 125-TH
+	MOVWF	tl							; TL = W (125-TH)
+
+loop_pulsos:
+	; CALL delay
+	CALL	pulsos_4
+	GOTO	loop_pulsos
 
 	GOTO	$	; security loop forever
+
+; ------------------------------ SECAO PULSOS -----------------------------
+pulsos_4:
+		MOVF	counter, 0
+		MOVLW	0x01
+		SUBWF	counter, 0
+		MOVWF	counter
+		BTFSS	STATUS,	Z
+			GOTO pulsos_4_end
+
+		; encotra a fase atual
+		INCFSZ	PORTB ; se incrementar e for zero, era FF
+			GOTO	fase_baixa ; era ALTO e agora deve ser BAIXO
+fase_alta:
+		; reinicia o contador de acordo com a fase
+		MOVF	th, W
+		MOVWF	counter
+
+		; configura a saida de acordo com a fase
+		MOVLW	0xFF
+		MOVWF	PORTB
+fase_baixa:
+		; reinicia o contador de acordo com a fase
+		MOVF	tl, W
+		MOVWF	counter
+
+		; configura a saida de acordo com a fase
+		MOVLW	0x00
+		MOVWF	PORTB
+pulsos_4_end:
+	RETURN
 
 ; ------------------------------ SECAO SERIAL -----------------------------
 configura_serial:
@@ -153,6 +227,28 @@ configura_timer:
 		BANKSEL TMR0
 		MOVLW   D'131'
 		MOVWF   TMR0
+	RETURN
+
+delay:
+		MOVWF	count_uh
+delay_loop_uh:
+		MOVLW	0xff
+		MOVWF	count_h
+		BANKSEL	PORTB
+		MOVWF	PORTB
+		; BANKSEL	count_h
+		BCF		STATUS,	RP0
+		BCF		STATUS,	RP1
+delay_loop_h:
+		MOVLW	0xff
+		MOVWF	count_l
+delay_loop_l:
+		DECFSZ	count_l
+		GOTO	delay_loop_l
+		DECFSZ	count_h
+		GOTO	delay_loop_h
+		DECFSZ	count_uh
+		GOTO	delay_loop_uh
 	RETURN
 
 	GOTO	$	; security loop forever
