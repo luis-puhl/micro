@@ -72,6 +72,9 @@ LDLIBSOPTIONS=
 FIXDEPS=fixDeps
 
 .build-conf:  ${BUILD_SUBPROJECTS}
+ifneq ($(INFORMATION_MESSAGE), )
+	@echo $(INFORMATION_MESSAGE)
+endif
 	${MAKE}  -f nbproject/Makefile-deploy.mk dist/${CND_CONF}/${IMAGE_TYPE}/template.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=16f873a
@@ -83,11 +86,11 @@ ${OBJECTDIR}/template.o: template.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/template.o.d 
 	@${RM} ${OBJECTDIR}/template.o 
-	@${FIXDEPS} dummy.d -e "/home/luis/projetos/micro/template/template.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projetos/micro/template/template.asm\\\" 
-	@${MV}  /home/luis/projetos/micro/template/template.O ${OBJECTDIR}/template.o
-	@${MV}  /home/luis/projetos/micro/template/template.ERR ${OBJECTDIR}/template.o.err
-	@${MV}  /home/luis/projetos/micro/template/template.LST ${OBJECTDIR}/template.o.lst
-	@${RM}  /home/luis/projetos/micro/template/template.HEX 
+	@${FIXDEPS} dummy.d -e "/home/luis/projects/micro/template/template.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projects/micro/template/template.asm\\\" 
+	@${MV}  /home/luis/projects/micro/template/template.O ${OBJECTDIR}/template.o
+	@${MV}  /home/luis/projects/micro/template/template.ERR ${OBJECTDIR}/template.o.err
+	@${MV}  /home/luis/projects/micro/template/template.LST ${OBJECTDIR}/template.o.lst
+	@${RM}  /home/luis/projects/micro/template/template.HEX 
 	@${DEP_GEN} -d "${OBJECTDIR}/template.o"
 	@${FIXDEPS} "${OBJECTDIR}/template.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -96,11 +99,11 @@ ${OBJECTDIR}/template.o: template.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/template.o.d 
 	@${RM} ${OBJECTDIR}/template.o 
-	@${FIXDEPS} dummy.d -e "/home/luis/projetos/micro/template/template.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projetos/micro/template/template.asm\\\" 
-	@${MV}  /home/luis/projetos/micro/template/template.O ${OBJECTDIR}/template.o
-	@${MV}  /home/luis/projetos/micro/template/template.ERR ${OBJECTDIR}/template.o.err
-	@${MV}  /home/luis/projetos/micro/template/template.LST ${OBJECTDIR}/template.o.lst
-	@${RM}  /home/luis/projetos/micro/template/template.HEX 
+	@${FIXDEPS} dummy.d -e "/home/luis/projects/micro/template/template.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projects/micro/template/template.asm\\\" 
+	@${MV}  /home/luis/projects/micro/template/template.O ${OBJECTDIR}/template.o
+	@${MV}  /home/luis/projects/micro/template/template.ERR ${OBJECTDIR}/template.o.err
+	@${MV}  /home/luis/projects/micro/template/template.LST ${OBJECTDIR}/template.o.lst
+	@${RM}  /home/luis/projects/micro/template/template.HEX 
 	@${DEP_GEN} -d "${OBJECTDIR}/template.o"
 	@${FIXDEPS} "${OBJECTDIR}/template.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	

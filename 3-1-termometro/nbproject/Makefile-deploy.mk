@@ -72,6 +72,9 @@ LDLIBSOPTIONS=
 FIXDEPS=fixDeps
 
 .build-conf:  ${BUILD_SUBPROJECTS}
+ifneq ($(INFORMATION_MESSAGE), )
+	@echo $(INFORMATION_MESSAGE)
+endif
 	${MAKE}  -f nbproject/Makefile-deploy.mk dist/${CND_CONF}/${IMAGE_TYPE}/3-1-termometro.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
 MP_PROCESSOR_OPTION=16f873a
@@ -83,11 +86,11 @@ ${OBJECTDIR}/termometro.o: termometro.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/termometro.o.d 
 	@${RM} ${OBJECTDIR}/termometro.o 
-	@${FIXDEPS} dummy.d -e "/home/luis/projetos/micro/3-1-termometro/termometro.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projetos/micro/3-1-termometro/termometro.asm\\\" 
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.O ${OBJECTDIR}/termometro.o
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.ERR ${OBJECTDIR}/termometro.o.err
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.LST ${OBJECTDIR}/termometro.o.lst
-	@${RM}  /home/luis/projetos/micro/3-1-termometro/termometro.HEX 
+	@${FIXDEPS} dummy.d -e "/home/luis/projects/micro/3-1-termometro/termometro.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projects/micro/3-1-termometro/termometro.asm\\\" 
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.O ${OBJECTDIR}/termometro.o
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.ERR ${OBJECTDIR}/termometro.o.err
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.LST ${OBJECTDIR}/termometro.o.lst
+	@${RM}  /home/luis/projects/micro/3-1-termometro/termometro.HEX 
 	@${DEP_GEN} -d "${OBJECTDIR}/termometro.o"
 	@${FIXDEPS} "${OBJECTDIR}/termometro.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
@@ -96,11 +99,11 @@ ${OBJECTDIR}/termometro.o: termometro.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/termometro.o.d 
 	@${RM} ${OBJECTDIR}/termometro.o 
-	@${FIXDEPS} dummy.d -e "/home/luis/projetos/micro/3-1-termometro/termometro.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projetos/micro/3-1-termometro/termometro.asm\\\" 
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.O ${OBJECTDIR}/termometro.o
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.ERR ${OBJECTDIR}/termometro.o.err
-	@${MV}  /home/luis/projetos/micro/3-1-termometro/termometro.LST ${OBJECTDIR}/termometro.o.lst
-	@${RM}  /home/luis/projetos/micro/3-1-termometro/termometro.HEX 
+	@${FIXDEPS} dummy.d -e "/home/luis/projects/micro/3-1-termometro/termometro.ERR" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION) -u  $(ASM_OPTIONS)   \\\"/home/luis/projects/micro/3-1-termometro/termometro.asm\\\" 
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.O ${OBJECTDIR}/termometro.o
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.ERR ${OBJECTDIR}/termometro.o.err
+	@${MV}  /home/luis/projects/micro/3-1-termometro/termometro.LST ${OBJECTDIR}/termometro.o.lst
+	@${RM}  /home/luis/projects/micro/3-1-termometro/termometro.HEX 
 	@${DEP_GEN} -d "${OBJECTDIR}/termometro.o"
 	@${FIXDEPS} "${OBJECTDIR}/termometro.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
