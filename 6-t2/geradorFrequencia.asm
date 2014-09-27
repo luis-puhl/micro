@@ -1,17 +1,24 @@
 #include<p16f873.inc> ; define o pic a utilizar
 	__config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_OFF & _WRT_OFF
-	
-	#define DEBUG					0x1
-	#define byte_recebido_serial	0x21
-	#define byte_enviar_serial		0x22
-	#define th						0x23
-	#define tl						0x24
 
-	#define counter					0x25
-
-	#define	count_l					0x26
-	#define	count_h					0x27
-	#define	count_uh				0x28
+	; 0X20 é o inicio da memoria usavel nos dados (MD)
+	CBLOCK 0X20
+		; variavies
+		; fucoes de serial
+		byte_recebido_serial
+		byte_enviar_serial
+		; funcao delay
+		count_l
+		count_h
+		count_uh
+		; funcao pulso
+		th
+		tl
+		; troca entre th e tl
+		counter
+		port_b_high_value
+		port_b_low_value
+	ENDC
 
 	ORG 0
 	GOTO	start				   ; go to beginning of program
@@ -23,27 +30,31 @@ end_int:
 	RETFIE
 
 start:
-	MOVLW	0x10
-	MOVWF	th
-	MOVWF	tl
+	; inicializa as variaveis
+	MOVLW	0x01
 	MOVWF	counter
 
-	; configura todas as portas RB para output
-	BANKSEL TRISB
-	MOVLW   B'00000000'	 
-	MOVWF   TRISB
+	; configura todas as portas RB para output para incicializar PORTB
+	MOVLW	0x00
+	BANKSEL	TRISB
+	MOVWF	TRISB
+	BANKSEL	PORTB
+	MOVWF	PORTB
 
-	; ligar todas as saidas da porta b
-	BANKSEL PORTB
-	MOVLW   0xFF
-	MOVWF   PORTB
+	MOVLW	0x5
+	MOVWF	th
+	MOVWF	tl
 
+	MOVLW	0xFF
+	MOVWF	port_b_high_value
+	MOVLW	0x00
+	MOVWF	port_b_low_value
+	
 	; outras configuracoes
 	CALL	configura_serial
 	;CALL	configura_timer
-	
-	GOTO	loop_pulsos
 
+	GOTO	loop_pulsos
 espera_valor:
 	; espera os dados da serial
 	CALL	leitura_serial
@@ -67,41 +78,42 @@ espera_valor:
 
 loop_pulsos:
 	; CALL delay
-	CALL	pulsos_4
-	GOTO	loop_pulsos
-
-	GOTO	$	; security loop forever
-
 ; ------------------------------ SECAO PULSOS -----------------------------
 pulsos_4:
-		MOVF	counter, 0
-		MOVLW	0x01
-		SUBWF	counter, 0
-		MOVWF	counter
-		BTFSS	STATUS,	Z
-			GOTO pulsos_4_end
+	BANKSEL	TMR0 ; BAKSEL BANK 0
+	DECFSZ	counter,	1
+		GOTO pulsos_4_end
 
-		; encotra a fase atual
-		INCFSZ	PORTB ; se incrementar e for zero, era FF
-			GOTO	fase_baixa ; era ALTO e agora deve ser BAIXO
+	; encotra a fase atual
+	MOVF	port_b_low_value,	0	; W = low_value
+	SUBWF	PORTB,				0	; W = W - PORTB
+	BTFSC	STATUS,				Z	; if PORTB == low_value (Z is SET ?)
+		GOTO	fase_alta			; TRUE era BAIXO e agora deve ser ALTO
+	GOTO	fase_baixa				; FALSE era ALTO e agora deve ser BAIXO
+
 fase_alta:
-		; reinicia o contador de acordo com a fase
-		MOVF	th, W
-		MOVWF	counter
+	; reinicia o contador de acordo com a fase
+	MOVF	th, W
+	MOVWF	counter
 
-		; configura a saida de acordo com a fase
-		MOVLW	0xFF
-		MOVWF	PORTB
+	; configura a saida de acordo com a fase
+	MOVF	port_b_high_value, 0
+	MOVWF	PORTB
+
+	GOTO pulsos_4_end
 fase_baixa:
-		; reinicia o contador de acordo com a fase
-		MOVF	tl, W
-		MOVWF	counter
+	; reinicia o contador de acordo com a fase
+	MOVF	tl, W
+	MOVWF	counter
 
-		; configura a saida de acordo com a fase
-		MOVLW	0x00
-		MOVWF	PORTB
+	; configura a saida de acordo com a fase
+	MOVF	port_b_low_value, 0
+	MOVWF	PORTB
+
 pulsos_4_end:
-	RETURN
+	GOTO	loop_pulsos
+
+	GOTO	$ ;security hold state loop
 
 ; ------------------------------ SECAO SERIAL -----------------------------
 configura_serial:

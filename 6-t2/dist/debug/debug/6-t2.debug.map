@@ -1,12 +1,12 @@
 MPLINK 5.04, LINKER
-Linker Map File - Created Fri Sep 26 18:04:00 2014
+Linker Map File - Created Sat Sep 27 17:38:05 2014
 
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
                 ---------  ---------  ---------  ---------  ---------
                    .org_0       code   0x000000    program   0x000000
                    .org_1       code   0x000000    program   0x000002
-                   .org_2       code   0x000004    program   0x0000e4
+                   .org_2       code   0x000004    program   0x0000ec
 .config_2007_/HOME/LUIS/PROJECTS/MICRO/6-T2/G       code   0x002007    program   0x000002
 
 
@@ -15,32 +15,32 @@ Linker Map File - Created Fri Sep 26 18:04:00 2014
                                Start         End      
                            ---------   ---------      
                             0x000000    0x000000      
-                            0x000004    0x000075      
+                            0x000004    0x000079      
                             0x002007    0x002007      
-            116 out of 4230 program addresses used, program memory utilization is 2%
+            120 out of 4230 program addresses used, program memory utilization is 2%
 
 
 
                               Symbols - Sorted by Name
                      Name    Address   Location    Storage File                     
                 ---------  ---------  ---------  --------- ---------                
-         configura_serial   0x000034    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-          configura_timer   0x000057    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                    delay   0x000064    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             delay_loop_h   0x00006c    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             delay_loop_l   0x00006e    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-            delay_loop_uh   0x000065    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+         configura_serial   0x000038    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+          configura_timer   0x00005b    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                    delay   0x000068    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             delay_loop_h   0x000070    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             delay_loop_l   0x000072    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+            delay_loop_uh   0x000069    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
                   end_int   0x000004    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-           escrita_serial   0x00004c    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-    espera_escrita_serial   0x00004e    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-    espera_leitura_serial   0x000043    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             espera_valor   0x000013    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                fase_alta   0x00002b    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-               fase_baixa   0x00002f    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-           leitura_serial   0x000041    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-              loop_pulsos   0x000020    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                 pulsos_4   0x000023    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             pulsos_4_end   0x000033    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+           escrita_serial   0x000050    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+    espera_escrita_serial   0x000052    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+    espera_leitura_serial   0x000047    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             espera_valor   0x000017    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                fase_alta   0x00002d    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+               fase_baixa   0x000032    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+           leitura_serial   0x000045    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+              loop_pulsos   0x000024    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                 pulsos_4   0x000024    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             pulsos_4_end   0x000036    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
                     start   0x000005    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
 
 
@@ -50,21 +50,21 @@ Linker Map File - Created Fri Sep 26 18:04:00 2014
                 ---------  ---------  ---------  --------- ---------                
                   end_int   0x000004    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
                     start   0x000005    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             espera_valor   0x000013    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-              loop_pulsos   0x000020    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                 pulsos_4   0x000023    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                fase_alta   0x00002b    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-               fase_baixa   0x00002f    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             pulsos_4_end   0x000033    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-         configura_serial   0x000034    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-           leitura_serial   0x000041    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-    espera_leitura_serial   0x000043    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-           escrita_serial   0x00004c    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-    espera_escrita_serial   0x00004e    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-          configura_timer   0x000057    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-                    delay   0x000064    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-            delay_loop_uh   0x000065    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             delay_loop_h   0x00006c    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
-             delay_loop_l   0x00006e    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             espera_valor   0x000017    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                 pulsos_4   0x000024    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+              loop_pulsos   0x000024    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                fase_alta   0x00002d    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+               fase_baixa   0x000032    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             pulsos_4_end   0x000036    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+         configura_serial   0x000038    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+           leitura_serial   0x000045    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+    espera_leitura_serial   0x000047    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+           escrita_serial   0x000050    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+    espera_escrita_serial   0x000052    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+          configura_timer   0x00005b    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+                    delay   0x000068    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+            delay_loop_uh   0x000069    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             delay_loop_h   0x000070    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
+             delay_loop_l   0x000072    program     static /home/luis/projects/micro/6-t2/geradorFrequencia.asm
 
 

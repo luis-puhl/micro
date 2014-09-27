@@ -7,12 +7,23 @@
 		aux
 		cont
 	ENDC
-	
+
 	; indica ao compilador para iniciar para iniciar nesse endereco ( 0 )
 	ORG 0 ; o proximo codigo objeto estara no endereco 0 no Prog. Objeto
+	GOTO	start	; go to beginning of program
+
+	; endereco de interrupçoes
+	ORG	 4
+	;
+	RETFIE
+
+start:
 	NOP ; end. 0
 	NOP ; end. 1
 	; { ... }
 	NOP
 	
+	GOTO	$		; loop forever
+
+
 END
