@@ -1,0 +1,3 @@
+Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /home/luis/projects/micro/7-testes.X/pulsos.asm 29 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[205] /home/luis/projects/micro/7-testes.X/pulsos.asm 76 : Found directive in column 1. (END)

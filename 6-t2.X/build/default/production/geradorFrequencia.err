@@ -1,0 +1,9 @@
+Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 42 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 140 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 160 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 189 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 223 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 266 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 268 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6-t2.X/geradorFrequencia.asm 270 : Using default destination of 1 (file).

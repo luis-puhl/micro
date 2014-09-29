@@ -5,6 +5,7 @@
 	CBLOCK 0X20
 		; variavies
 		aux
+		portb_mirror
 		; fucoes de serial
 		byte_recebido_serial
 		byte_enviar_serial
@@ -15,6 +16,9 @@
 		; funcao pulso
 		th
 		tl
+		th_thresh_hold
+		mini_loop
+		mini_loop_lenth
 		; troca entre th e tl
 		counter
 		port_b_high_value
@@ -24,9 +28,55 @@
 	ORG 0
 	GOTO	start				   ; go to beginning of program
 	ORG	 4
-	; INTERRUPCOES :
-	; timer
-	CALL	pulsos_4
+		; INTERRUPCOES :
+		; timer
+		BANKSEL	INTCON
+		BTFSS	INTCON,	T0IF
+		GOTO	end_int
+
+		;MOVLW	0x02
+		;CALL	delay
+
+		DECFSZ	mini_loop,	1
+			GOTO	end_int
+		MOVF	mini_loop_lenth, 0
+		MOVWF	mini_loop
+
+		BANKSEL	TMR0 ; BAKSEL BANK 0
+		MOVF	counter,	0
+		;MOVWF	byte_enviar_serial
+		;;CALL	escrita_serial
+		DECFSZ	counter,	1
+			GOTO	end_int
+
+		BANKSEL	PORTB
+		MOVF	PORTB				,0
+
+		; encotra a fase atual
+		MOVF	port_b_low_value,	0	; W = low_value
+		SUBWF	PORTB,				0	; W = W - PORTB
+		BTFSC	STATUS,				Z	; if PORTB == low_value (Z is SET ?)
+			GOTO	fase_alta			; TRUE era BAIXO e agora deve ser ALTO
+		GOTO	fase_baixa				; FALSE era ALTO e agora deve ser BAIXO
+
+fase_alta:
+		; reinicia o contador de acordo com a fase
+		MOVF	th, W
+		MOVWF	counter
+
+		; configura a saida de acordo com a fase
+		MOVF	port_b_high_value, 0
+		MOVWF	PORTB
+
+		GOTO	end_int
+fase_baixa:
+		; reinicia o contador de acordo com a fase
+		MOVF	tl, W
+		MOVWF	counter
+
+		; configura a saida de acordo com a fase
+		MOVF	port_b_low_value, 0
+		MOVWF	PORTB
 
 end_int:
 	RETFIE
@@ -52,14 +102,21 @@ start:
 	MOVLW	0x00
 	MOVWF	port_b_low_value
 	
+	MOVLW	d'125'
+	MOVWF	th_thresh_hold
+
+	MOVLW	D'100'
+	MOVWF	mini_loop_lenth
+	MOVWF	mini_loop
+
+	
 	; outras configuracoes
 	CALL	configura_serial
-	CALL	configura_timer
 
 espera_valor:
 	; espera os dados da serial
 	CALL	leitura_serial
-	MOVF	byte_recebido_serial, W
+	MOVF	byte_recebido_serial, 0
 
 	; menor que 78, espera outro
     SUBLW	D'77'
@@ -80,46 +137,13 @@ espera_valor:
 	MOVWF	th							; TH = valorRecebido
 aritimetica:
 	; faz aritimética
-	MOVLW	d'125'
-	SUBWF	aux, W		; W= 125-TH
+	; 4) Então calcule TL =125-TH
+
+	MOVF	th , 0
+	SUBWF	th_thresh_hold,	0		; W= 125-TH
 	MOVWF	tl			; TL = W (125-TH)
-
-	GOTO	$ ;security hold state loop
-
-; ------------------------------ SECAO PULSOS -----------------------------
-pulsos_4:
-		BANKSEL	TMR0 ; BAKSEL BANK 0
-		DECFSZ	counter,	1
-			GOTO pulsos_4_end
-
-		; encotra a fase atual
-		MOVF	port_b_low_value,	0	; W = low_value
-		SUBWF	PORTB,				0	; W = W - PORTB
-		BTFSC	STATUS,				Z	; if PORTB == low_value (Z is SET ?)
-			GOTO	fase_alta			; TRUE era BAIXO e agora deve ser ALTO
-		GOTO	fase_baixa				; FALSE era ALTO e agora deve ser BAIXO
-
-fase_alta:
-		; reinicia o contador de acordo com a fase
-		MOVF	th, W
-		MOVWF	counter
-
-		; configura a saida de acordo com a fase
-		MOVF	port_b_high_value, 0
-		MOVWF	PORTB
-
-		GOTO pulsos_4_end
-fase_baixa:
-		; reinicia o contador de acordo com a fase
-		MOVF	tl, W
-		MOVWF	counter
-
-		; configura a saida de acordo com a fase
-		MOVF	port_b_low_value, 0
-		MOVWF	PORTB
-
-pulsos_4_end:
-	RETURN
+	
+	CALL	configura_timer
 
 	GOTO	$ ;security hold state loop
 
@@ -198,9 +222,18 @@ espera_escrita_serial:
 ; ------------------------------ SECAO TIMER -----------------------------
 configura_timer:
 		; T = 1ms
+
 		; Fint = 1000 Hz
 		; Prescaler = 2:1 (000)
 		; TRM0 = 131
+
+		; Fint = 100 Hz
+		; Prescaler = 16:1 (011)
+		; TRM0 = 100
+
+		; Fint = 10 Hz
+		; Prescaler = 256:1 (111)
+		; TRM0 = 158
 
 		; ATIVA O TIMER
 		; OPTION_REG: control bits to configure
@@ -219,7 +252,7 @@ configura_timer:
 		; PS1									= 0
 		; PS0									= 0
 		BANKSEL OPTION_REG
-		MOVLW   B'00000000'
+		MOVLW   B'00000111'
 		MOVWF   OPTION_REG
 
 		; CONFIGURA A INTERRUPÇÃO
@@ -245,20 +278,16 @@ configura_timer:
 		; -----------------------
 		;		(256 - TMR0)
 		BANKSEL TMR0
-		MOVLW   D'131'
+		MOVLW   D'157'
 		MOVWF   TMR0
 	RETURN
 
+; -------------------------------- delay ----------------------------------------
 delay:
 		MOVWF	count_uh
 delay_loop_uh:
 		MOVLW	0xff
 		MOVWF	count_h
-		BANKSEL	PORTB
-		MOVWF	PORTB
-		; BANKSEL	count_h
-		BCF		STATUS,	RP0
-		BCF		STATUS,	RP1
 delay_loop_h:
 		MOVLW	0xff
 		MOVWF	count_l
@@ -270,6 +299,5 @@ delay_loop_l:
 		DECFSZ	count_uh
 		GOTO	delay_loop_uh
 	RETURN
-
 	GOTO	$	; security loop forever
 	END

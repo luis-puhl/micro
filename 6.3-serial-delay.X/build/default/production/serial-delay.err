@@ -1,0 +1,7 @@
+Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 68 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 88 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 117 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 137 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 139 : Using default destination of 1 (file).
+Message[305] /home/luis/projects/micro/6.3-serial-delay.X/serial-delay.asm 141 : Using default destination of 1 (file).

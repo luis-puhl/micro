@@ -1,0 +1,70 @@
+MPLINK 5.04, LINKER
+Linker Map File - Created Mon Sep 29 12:43:50 2014
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                   .org_1       code   0x000004    program   0x000108
+.config_2007_BUILD/DEFAULT/PRODUCTION/TIMER.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x000087      
+                            0x002007    0x002007      
+            136 out of 4230 program addresses used, program memory utilization is 3%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+             _.org_1_004A   0x00004a    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             _.org_1_0087   0x000087    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+              aritimetica   0x000046    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+         configura_serial   0x00004b    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+          configura_timer   0x00006e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                    delay   0x00007b    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             delay_loop_h   0x00007e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             delay_loop_l   0x000080    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+            delay_loop_uh   0x00007c    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                  end_int   0x000022    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+           escrita_serial   0x000063    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+    espera_escrita_serial   0x000065    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+    espera_leitura_serial   0x00005a    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             espera_valor   0x000039    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                fase_alta   0x000019    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+               fase_baixa   0x00001e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+           leitura_serial   0x000058    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                    start   0x000023    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                fase_alta   0x000019    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+               fase_baixa   0x00001e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                  end_int   0x000022    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                    start   0x000023    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             espera_valor   0x000039    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+              aritimetica   0x000046    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             _.org_1_004A   0x00004a    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+         configura_serial   0x00004b    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+           leitura_serial   0x000058    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+    espera_leitura_serial   0x00005a    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+           escrita_serial   0x000063    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+    espera_escrita_serial   0x000065    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+          configura_timer   0x00006e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+                    delay   0x00007b    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+            delay_loop_uh   0x00007c    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             delay_loop_h   0x00007e    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             delay_loop_l   0x000080    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+             _.org_1_0087   0x000087    program     static /home/luis/projects/micro/6.2-timer.X/timer.asm
+
+
