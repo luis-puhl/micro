@@ -1,0 +1,5 @@
+Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /home/luis/projects/micro/6.1-espera-valor.X/espera-valor.asm 41 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6.1-espera-valor.X/espera-valor.asm 102 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6.1-espera-valor.X/espera-valor.asm 122 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/luis/projects/micro/6.1-espera-valor.X/espera-valor.asm 151 : Register in operand not in bank 0.  Ensure that bank bits are correct.

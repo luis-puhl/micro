@@ -4,6 +4,7 @@
 	; 0X20 é o inicio da memoria usavel nos dados (MD)
 	CBLOCK 0X20
 		; variavies
+		aux
 		; fucoes de serial
 		byte_recebido_serial
 		byte_enviar_serial
@@ -41,7 +42,7 @@ start:
 	BANKSEL	PORTB
 	MOVWF	PORTB
 
-	MOVLW	0x5
+	MOVLW	d'100'
 	MOVWF	th
 	MOVWF	tl
 
@@ -52,9 +53,8 @@ start:
 	
 	; outras configuracoes
 	CALL	configura_serial
-	;CALL	configura_timer
+	CALL	configura_timer
 
-	GOTO	loop_pulsos
 espera_valor:
 	; espera os dados da serial
 	CALL	leitura_serial
@@ -63,18 +63,27 @@ espera_valor:
 	; menor que 78, espera outro
     SUBLW	D'77'
 	BTFSC	STATUS, C
-		GOTO	espera_valor
+		;GOTO	espera_valor
+		GOTO	aritimetica
+
 	; maior que 124, espera outro
-	MOVF	th, w
+	MOVF	aux, w
 	SUBLW	D'124'
 	BTFSS	STATUS, C
-		GOTO	espera_valor
-	
-	; faz aritimética
+		;GOTO	espera_valor
+		GOTO	aritimetica
+
+	MOVF	byte_recebido_serial, W
+	MOVWF	aux
+	MOVF	aux, W
 	MOVWF	th							; TH = valorRecebido
+aritimetica:
+	; faz aritimética
 	MOVLW	d'125'
-	SUBWF	byte_recebido_serial, W		; W= 125-TH
-	MOVWF	tl							; TL = W (125-TH)
+	SUBWF	aux, W		; W= 125-TH
+	MOVWF	tl			; TL = W (125-TH)
+
+
 
 loop_pulsos:
 	; CALL delay
