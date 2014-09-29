@@ -2,7 +2,7 @@
 	__config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_OFF & _WRT_OFF
 
 	; 0X20 é o inicio da memoria usavel nos dados (MD)
-	CBLOCK 0X20
+	CBLOCK 0x20
 		; variavies
 		aux
 		portb_mirror
