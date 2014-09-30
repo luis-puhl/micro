@@ -1,9 +1,0 @@
-Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
-Message[302] /home/luis/projects/micro/6.2-timer.X/timer.asm 84 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6.2-timer.X/timer.asm 182 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6.2-timer.X/timer.asm 202 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6.2-timer.X/timer.asm 231 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[302] /home/luis/projects/micro/6.2-timer.X/timer.asm 265 : Register in operand not in bank 0.  Ensure that bank bits are correct.
-Message[305] /home/luis/projects/micro/6.2-timer.X/timer.asm 304 : Using default destination of 1 (file).
-Message[305] /home/luis/projects/micro/6.2-timer.X/timer.asm 306 : Using default destination of 1 (file).
-Message[305] /home/luis/projects/micro/6.2-timer.X/timer.asm 308 : Using default destination of 1 (file).
