@@ -1,4 +1,4 @@
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  1
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -16,328 +16,474 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00009 
 Message[301]: MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
                       00501         LIST
-2007   3D39           00002         __config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_O
-                            FF & _WRT_OFF
+                      00002 ;#define        DEBUG
                       00003 
-                      00004         ; 0X20 é o inicio da memoria usavel nos dados (MD)
-                      00005         CBLOCK 0X20
-                      00006                 ; variavies
-  00000020            00007                 aux
-                      00008                 ; fucoes de serial
-  00000021            00009                 byte_recebido_serial
-  00000022            00010                 byte_enviar_serial
-                      00011                 ; funcao delay
-  00000023            00012                 count_l
-  00000024            00013                 count_h
-  00000025            00014                 count_uh
-                      00015                 ; funcao pulso
-  00000026            00016                 th
-  00000027            00017                 tl
-                      00018                 ; troca entre th e tl
-  00000028            00019                 counter
-  00000029            00020                 port_b_high_value
-  0000002A            00021                 port_b_low_value
-                      00022         ENDC
-                      00023 
-                      00024         ORG 0
-0000   2???           00025         GOTO    start                              ; go to beginning of program
-                      00026         ORG      4
-                      00027         ; INTERRUPCOES :
-                      00028         ; timer
+2007   3D39           00004         __config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_O
+                            FF & _WRT_OFF
+                      00005 
+                      00006         ; 0X20 é o inicio da memoria usavel nos dados (MD)
+                      00007         CBLOCK 0x20
+                      00008                 ; variavies
+  00000020            00009                 aux
+  00000021            00010                 portb_mirror
+                      00011                 ; fucoes de serial
+  00000022            00012                 byte_recebido_serial
+  00000023            00013                 byte_enviar_serial
+                      00014                 ; funcao delay
+  00000024            00015                 count_l
+  00000025            00016                 count_h
+  00000026            00017                 count_uh
+                      00018                 ; funcao pulso
+  00000027            00019                 th
+  00000028            00020                 tl
+  00000029            00021                 th_thresh_hold
+  0000002A            00022                 mini_loop
+  0000002B            00023                 mini_loop_lenth
+                      00024                 ; troca entre th e tl
+  0000002C            00025                 counter
+  0000002D            00026                 port_b_high_value
+  0000002E            00027                 port_b_low_value
+                      00028         ENDC
                       00029 
-0004                  00030 end_int:
-0004   0009           00031         RETFIE
-                      00032 
-0005                  00033 start:
-                      00034         ; inicializa as variaveis
-0005   3001           00035         MOVLW   0x01
-0006   00A8           00036         MOVWF   counter
-                      00037 
-                      00038         ; configura todas as portas RB para output para incicializar PORTB
-0007   3000           00039         MOVLW   0x00
-0008   1683 1303      00040         BANKSEL TRISB
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  2
+                      00030         ORG 0
+0000   2???           00031         GOTO    start                              ; go to beginning of program
+                      00032         ORG      4
+                      00033                 ; INTERRUPCOES :
+                      00034                 ; timer
+0004   1283 1303      00035                 BANKSEL INTCON
+0006   1D0B           00036                 BTFSS   INTCON, T0IF
+0007   2???           00037                 GOTO    end_int
+                      00038                 
+                      00039                 ;BANKSEL        0
+0008   1283           00040                 BCF             STATUS,         RP0
+0009   1303           00041                 BCF             STATUS,         RP1
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000A   0086           00041         MOVWF   TRISB
-000B   1283 1303      00042         BANKSEL PORTB
-000D   0086           00043         MOVWF   PORTB
-                      00044 
-000E   3064           00045         MOVLW   d'100'
-000F   00A6           00046         MOVWF   th
-0010   00A7           00047         MOVWF   tl
-                      00048 
-0011   30FF           00049         MOVLW   0xFF
-0012   00A9           00050         MOVWF   port_b_high_value
-0013   3000           00051         MOVLW   0x00
-0014   00AA           00052         MOVWF   port_b_low_value
-                      00053         
-                      00054         ; outras configuracoes
-0015   2???           00055         CALL    configura_serial
-0016   2???           00056         CALL    configura_timer
-                      00057 
-0017                  00058 espera_valor:
-                      00059         ; espera os dados da serial
-0017   2???           00060         CALL    leitura_serial
-0018   0821           00061         MOVF    byte_recebido_serial, W
-                      00062 
-                      00063         ; menor que 78, espera outro
-0019   3C4D           00064     SUBLW       D'77'
-001A   1803           00065         BTFSC   STATUS, C
-                      00066                 ;GOTO   espera_valor
-001B   2???           00067                 GOTO    aritimetica
-                      00068 
-                      00069         ; maior que 124, espera outro
-001C   0820           00070         MOVF    aux, w
-001D   3C7C           00071         SUBLW   D'124'
-001E   1C03           00072         BTFSS   STATUS, C
-                      00073                 ;GOTO   espera_valor
-001F   2???           00074                 GOTO    aritimetica
-                      00075 
-0020   0821           00076         MOVF    byte_recebido_serial, W
-0021   00A0           00077         MOVWF   aux
-0022   0820           00078         MOVF    aux, W
-0023   00A6           00079         MOVWF   th                                                      ; TH = valorRecebido
-0024                  00080 aritimetica:
-                      00081         ; faz aritimética
-0024   307D           00082         MOVLW   d'125'
-0025   0220           00083         SUBWF   aux, W          ; W= 125-TH
-0026   00A7           00084         MOVWF   tl                      ; TL = W (125-TH)
-                      00085 
-                      00086 
+                      00042 
+                      00043                 #ifdef DEBUG
+                      00044                         MOVLW   0x02
+                      00045                         CALL    delay
+                      00046                 #endif
+                      00047 
+                      00048                 ; se o mini_loop não é zero, finaliza a interrupção
+000A   0BAA           00049                 DECFSZ  mini_loop,      1
+000B   2???           00050                         GOTO    end_int
+                      00051                 ; reinicia o mini_loop
+000C   082B           00052                 MOVF    mini_loop_lenth, 0
+000D   00AA           00053                 MOVWF   mini_loop
+                      00054                 
+000E   082C           00055                 MOVF    counter,        0
+                      00056                 #ifdef DEBUG
+                      00057                         CALL    envia_w_serial
+                      00058                 #endif
+000F   0BAC           00059                 DECFSZ  counter,        1
+0010   2???           00060                         GOTO    end_int
+                      00061 
+0011   1283 1303      00062                 BANKSEL PORTB
+0013   0806           00063                 MOVF    PORTB                           ,0
+                      00064 
+0014   2???           00065                 CALL    espera_valor ; espera valor não é preeptivo
+                      00066                 ; encotra a fase atual
+0015   082E           00067                 MOVF    port_b_low_value,       0       ; W = low_value
+0016   0206           00068                 SUBWF   PORTB,                          0       ; W = W - PORTB
+0017   1903           00069                 BTFSC   STATUS,                         Z       ; if PORTB == low_value (Z is SET ?)
+0018   2???           00070                         GOTO    fase_alta                       ; TRUE era BAIXO e agora deve ser ALTO
+0019   2???           00071                 GOTO    fase_baixa                              ; FALSE era ALTO e agora deve ser BAIXO
+                      00072 
+001A                  00073 fase_alta:
+                      00074                 ; reinicia o contador de acordo com a fase
+001A   0827           00075                 MOVF    th, W
+001B   00AC           00076                 MOVWF   counter
+                      00077 
+                      00078                 ; configura a saida de acordo com a fase
+001C   082D           00079                 MOVF    port_b_high_value, 0
+001D   0086           00080                 MOVWF   PORTB
+                      00081 
+001E   2???           00082                 GOTO    end_int
+001F                  00083 fase_baixa:
+                      00084                 ; reinicia o contador de acordo com a fase
+001F   0828           00085                 MOVF    tl, W
+0020   00AC           00086                 MOVWF   counter
                       00087 
-0027                  00088 loop_pulsos:
-                      00089         ; CALL delay
-                      00090 ; ------------------------------ SECAO PULSOS -----------------------------
-0027                  00091 pulsos_4:
-0027   1283 1303      00092         BANKSEL TMR0 ; BAKSEL BANK 0
-0029   0BA8           00093         DECFSZ  counter,        1
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  3
+                      00088                 ; configura a saida de acordo com a fase
+0021   082E           00089                 MOVF    port_b_low_value, 0
+0022   0086           00090                 MOVWF   PORTB
+                      00091 
+0023                  00092 end_int:
+0023   0009           00093         RETFIE
+                      00094 
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-002A   2???           00094                 GOTO pulsos_4_end
-                      00095 
-                      00096         ; encotra a fase atual
-002B   082A           00097         MOVF    port_b_low_value,       0       ; W = low_value
-002C   0206           00098         SUBWF   PORTB,                          0       ; W = W - PORTB
-002D   1903           00099         BTFSC   STATUS,                         Z       ; if PORTB == low_value (Z is SET ?)
-002E   2???           00100                 GOTO    fase_alta                       ; TRUE era BAIXO e agora deve ser ALTO
-002F   2???           00101         GOTO    fase_baixa                              ; FALSE era ALTO e agora deve ser BAIXO
-                      00102 
-0030                  00103 fase_alta:
-                      00104         ; reinicia o contador de acordo com a fase
-0030   0826           00105         MOVF    th, W
-0031   00A8           00106         MOVWF   counter
-                      00107 
-                      00108         ; configura a saida de acordo com a fase
-0032   0829           00109         MOVF    port_b_high_value, 0
-0033   0086           00110         MOVWF   PORTB
-                      00111 
-0034   2???           00112         GOTO pulsos_4_end
-0035                  00113 fase_baixa:
-                      00114         ; reinicia o contador de acordo com a fase
-0035   0827           00115         MOVF    tl, W
-0036   00A8           00116         MOVWF   counter
-                      00117 
-                      00118         ; configura a saida de acordo com a fase
-0037   082A           00119         MOVF    port_b_low_value, 0
-0038   0086           00120         MOVWF   PORTB
-                      00121 
-0039                  00122 pulsos_4_end:
-0039   2???           00123         GOTO    loop_pulsos
-                      00124 
-003A   2???           00125         GOTO    $ ;security hold state loop
-                      00126 
-                      00127 ; ------------------------------ SECAO SERIAL -----------------------------
-003B                  00128 configura_serial:
-                      00129                 ; TXSTA: TRANSMIT STATUS AND CONTROL REGISTER (ADDRESS 98h)
-                      00130                 ; CSRC: Clock Source Select bit         = 0 (assincrono)
-                      00131                 ; TX9: 9-bit Transmit Enable bit        = 0 (sem 9º bit)
-                      00132                 ; TXEN: Transmit Enable bit                     = 1 (liga o tx)
-                      00133                 ; SYNC: USART Mode Select bit           = 0 (assincrono)
-                      00134                 ; U-0 :                                                         = 0     (n/a)
-                      00135                 ; BRGH: High Baud Rate Select bit       = 1 (High speed)
-                      00136                 ; TRMT: Transmit Status bit                     = 0 (read-only)
-                      00137                 ; TX9D: 9th bit                                         = 0 (n/a)
-                      00138                 ; TXSTA = 0010 0100
-003B   1683 1303      00139                 BANKSEL TXSTA
-003D   3024           00140                 MOVLW   B'00100100'
+0024                  00095 start:
+                      00096         ; inicializa as variaveis
+                      00097 
+                      00098         ; counter não deve ser iniciado com zero
+0024   3001           00099         MOVLW   0x01
+0025   00AC           00100         MOVWF   counter
+                      00101 
+                      00102         ; configura todas as portas RB para output para incicializar PORTB
+0026   3000           00103         MOVLW   0x00
+0027   1683 1303      00104         BANKSEL TRISB
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-003E   0098           00141                 MOVWF   TXSTA
-                      00142 
-                      00143                 ; RCSTA: RECEIVE STATUS AND CONTROL REGISTER (ADDRESS 18h)
-                      00144                 ; SPEN: Serial Port Enable bit                  = 1 (enable)
-                      00145                 ; RX9: 9-bit Receive Enable bit                 = 0 (sem 9º bit)
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  4
+0029   0086           00105         MOVWF   TRISB
+002A   1283 1303      00106         BANKSEL PORTB
+002C   0086           00107         MOVWF   PORTB
+                      00108 
+                      00109         ; inicia th e tl com 100
+                      00110         ; apenas th é nessesário mas iniciar todas as variaveis é bom
+002D   3064           00111         MOVLW   d'100'
+002E   00A7           00112         MOVWF   th
+002F   00A8           00113         MOVWF   tl
+                      00114 
+0030   30FF           00115         MOVLW   0xFF
+0031   00AD           00116         MOVWF   port_b_high_value
+0032   3000           00117         MOVLW   0x00
+0033   00AE           00118         MOVWF   port_b_low_value
+                      00119 
+0034   307D           00120         MOVLW   d'125'
+0035   00A9           00121         MOVWF   th_thresh_hold
+                      00122 
+0036   3064           00123         MOVLW   D'100'
+0037   00AB           00124         MOVWF   mini_loop_lenth
+0038   00AA           00125         MOVWF   mini_loop
+                      00126         
+                      00127         ; outras configuracoes
+0039   2???           00128         CALL    configura_serial
+003A   2???           00129         CALL    configura_timer
+                      00130 
+                      00131         #ifdef  DEBUG
+                      00132                 MOVLW   0xFF
+                      00133                 CALL    envia_w_serial
+                      00134                 MOVLW   0x00
+                      00135                 CALL    envia_w_serial
+                      00136         #endif
+                      00137         
+                      00138         ; o primeiro valor de th deve ser recebido pela serial sincronamente
+                      00139         ; ou seja, a execução é parada até receber algo pela serial
+                      00140         ; os demais são assincronos
+003B   2???           00141         CALL    leitura_serial
+003C   0822           00142         MOVF    byte_recebido_serial, 0
+003D   2???           00143         CALL    calcula_valor
+                      00144 
+                      00145         ; inicia o timer
+003E   2???           00146         CALL    inicia_timer
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00146                 ; SREN: Single Receive Enable bit               = 0 (N/A)
-                      00147                 ; CREN: Continuous Receive Enable bit   = 1 (continuous receive)
-                      00148                 ; ADDEN: Address Detect Enable bit              = 0 (N/A)
-                      00149                 ; FERR: Framing Error bit                               = 0 (read-only)
-                      00150                 ; OERR: Overrun Error bit                               = 0 (read-only)
-                      00151                 ; RX9D: 9th bit of Received Data                = 0 (read-only)
-                      00152                 ; RCSTA = 1001 0000
-003F   1283 1303      00153                 BANKSEL RCSTA
-0041   3090           00154                 MOVLW   B'10010000'
-0042   0098           00155                 MOVWF   RCSTA
+                      00147 
+                      00148         ; fim da rotina principal
+003F   2???           00149         GOTO    $ ;security hold state loop
+                      00150 
+0040                  00151 espera_valor:
+                      00152                 ; espera os dados da serial
+0040   0827           00153                 MOVF    th, 0                                           ; leitura_serial_asinc faz "MOVW
+                            F byte_recebido" caso nao receba nada
+0041   2???           00154                 CALL    leitura_serial_asinc
+0042   0822           00155                 MOVF    byte_recebido_serial, 0
                       00156 
-                      00157                 ; SPBRG = 25
-                      00158                 ; calculado para 9600 bps
-0043   1683 1303      00159                 BANKSEL SPBRG
-0045   3019           00160                 MOVLW   D'25'
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0046   0099           00161                 MOVWF   SPBRG
-0047   0008           00162         RETURN
-0048                  00163 leitura_serial:
-0048   1283 1303      00164                 BANKSEL PIR1
-                      00165                 ; registrador PIR1 contem as flags individuais de cada uma das
-                      00166                 ; interrupcoes perifericas
-                      00167                 ; bit RCIF indica se o buffer de entrada esta cheio
-                      00168                 ; (entrada serial)
-004A                  00169 espera_leitura_serial:
-004A   1E8C           00170                 BTFSS   PIR1,   RCIF                    ; se bit RCIF do registrador PIR1
-                      00171                                                                                 ; ou seja, se tem coisa 
-                            a ler
-004B   2???           00172                 GOTO    espera_leitura_serial   ; nao chegou byte
-004C   1283 1303      00173                 BANKSEL RCREG
-004E   081A           00174                 MOVF    RCREG, W                                ; chegou byte
-                      00175                 ;BANKSEL        byte_recebido_serial
-004F   1283           00176                 BCF             STATUS,         RP0
-0050   1303           00177                 BCF             STATUS,         RP1
-0051   00A1           00178                 MOVWF   byte_recebido_serial
-0052   0008           00179         RETURN
-0053                  00180 escrita_serial:
-                      00181                 ; TXSTA:        transmit status and control register
-                      00182                 ; TRMT:  bit de buffer de escrita cheio
-0053   1683 1303      00183                 BANKSEL TXSTA
-                      00184                 ; caso ainda nao tenha enviado o que esta no buffer
-                      00185                 ; espera o envio (anterior)
-0055                  00186 espera_escrita_serial:
-                      00187                 ;TRMT: Transmit Shift Register Status bit
-                      00188                 ;1 = TSR empty
-                      00189                 ;0 = TSR full
-Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0055   1C98           00190                 BTFSS   TXSTA, TRMT                             ; TRMT == 1? ;
-0056   2???           00191                 GOTO    espera_escrita_serial   ; buffer cheio, espere
-                      00192                 ;BANKSEL        byte_enviar_serial
-0057   1283           00193                 BCF             STATUS, RP0
-0058   1303           00194                 BCF             STATUS, RP1
-0059   0822           00195                 MOVF    byte_enviar_serial,     W       ; pega a variavel
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  5
+0043                  00157 calcula_valor:
+                      00158                 ; pega valor de w e testa ele para ser o novo th
+                      00159                 ; menor que 78, espera outro
+0043   3C4D           00160                 SUBLW   D'77'
+0044   1803           00161                 BTFSC   STATUS, C
+0045   2???           00162                         GOTO    aritimetica
+                      00163 
+                      00164                 ; maior que 124, espera outro
+0046   0820           00165                 MOVF    aux, w
+0047   3C7C           00166                 SUBLW   D'124'
+0048   1C03           00167                 BTFSS   STATUS, C
+0049   2???           00168                         GOTO    aritimetica
+                      00169 
+                      00170                 ; TH = valorRecebido
+                      00171                 ; aux = valorRecebido
+004A   0822           00172                 MOVF    byte_recebido_serial, 0
+004B   00A0           00173                 MOVWF   aux
+004C   00A7           00174                 MOVWF   th
+004D                  00175 aritimetica:
+                      00176                 ; faz aritimética
+                      00177                 ; 4) Então calcule TL =125-TH
+                      00178 
+004D   0827           00179                 MOVF    th , 0
+004E   0229           00180                 SUBWF   th_thresh_hold, 0       ; W= 125-TH
+004F   00A8           00181                 MOVWF   tl                                      ; TL = W (125-TH)
+                      00182 
+                      00183                 ; envia th e tl calculados
+                      00184                 #ifdef DEBUG
+                      00185                         MOVLW   0x54    ; ascii T
+                      00186                         CALL envia_w_serial
+                      00187                         MOVLW   0x48    ; ascii H
+                      00188                         CALL envia_w_serial
+                      00189                         MOVLW   0x00
+                      00190                         CALL envia_w_serial
+                      00191                         MOVF    th, 0
+                      00192                         CALL envia_w_serial
+                      00193 
+                      00194                         MOVLW   0x54    ; ascii T
+                      00195                         CALL envia_w_serial
+                      00196                         MOVLW   0x4C    ; ascii L
+                      00197                         CALL envia_w_serial
+                      00198                         MOVLW   0x00
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-005A   1283 1303      00196                 BANKSEL TXREG
-005C   0099           00197                 MOVWF   TXREG                                   ; escreve a variavel para o buffer
-005D   0008           00198         RETURN
-                      00199 ; ------------------------------ SECAO TIMER -----------------------------
-005E                  00200 configura_timer:
-                      00201                 ; T = 1ms
-                      00202                 ; Fint = 1000 Hz
-                      00203                 ; Prescaler = 2:1 (000)
-                      00204                 ; TRM0 = 131
-                      00205 
-                      00206                 ; ATIVA O TIMER
-                      00207                 ; OPTION_REG: control bits to configure
-                      00208                 ;       the TMR0 prescaler/WDT postscaler (single assign-
-                      00209                 ;       able register known also as the prescaler), the External
-                      00210                 ;       INT Interrupt, TMR0 and the weak pull-ups on PORTB.
-                      00211                 ;       (ADDRESS 81h, 181h)
-                      00212                 ;
-                      00213                 ; RBPU: PORTB Pull-up Enable bit                = 0 (PORTB pull-ups are enabled by indiv
-                            idual port latch values)
-                      00214                 ; INTEDG: Interrupt Edge Select bit             = 0 (Interrupt on falling edge of RB0/IN
-                            T pin)
-                      00215                 ; T0CS: TMR0 Clock Source Select bit    = 0 (Internal instruction cycle clock CLKOUT)
-                      00216                 ; T0SE: TMR0 Source Edge Select bit             = 0 (assincrono)
-                      00217                 ; PSA: Prescaler Assignment bit                 = 0 (Prescaler is assigned to the Timer0
-                             module)
-                      00218                 ; PS2:PS0: Prescaler Rate Select bits   = (1:2)
-                      00219                 ; PS2                                                                   = 0
-                      00220                 ; PS1                                                                   = 0
-                      00221                 ; PS0                                                                   = 0
-005E   1683 1303      00222                 BANKSEL OPTION_REG
-0060   3000           00223                 MOVLW   B'00000000'
+                      00199                         CALL envia_w_serial
+                      00200                         MOVF    tl, 0
+                      00201                         CALL envia_w_serial
+                      00202 
+                      00203                         MOVLW   0x00
+                      00204                         CALL envia_w_serial
+                      00205                 #endif
+0050   0008           00206         RETURN
+                      00207 
+                      00208 ; ------------------------------ SECAO SERIAL -----------------------------
+0051                  00209 configura_serial:
+                      00210                 ; TXSTA: TRANSMIT STATUS AND CONTROL REGISTER (ADDRESS 98h)
+                      00211                 ; CSRC: Clock Source Select bit         = 0 (assincrono)
+                      00212                 ; TX9: 9-bit Transmit Enable bit        = 0 (sem 9º bit)
+                      00213                 ; TXEN: Transmit Enable bit                     = 1 (liga o tx)
+                      00214                 ; SYNC: USART Mode Select bit           = 0 (assincrono)
+                      00215                 ; U-0 :                                                         = 0     (n/a)
+                      00216                 ; BRGH: High Baud Rate Select bit       = 1 (High speed)
+                      00217                 ; TRMT: Transmit Status bit                     = 0 (read-only)
+                      00218                 ; TX9D: 9th bit                                         = 0 (n/a)
+                      00219                 ; TXSTA = 0010 0100
+0051   1683 1303      00220                 BANKSEL TXSTA
+0053   3024           00221                 MOVLW   B'00100100'
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-0061   0081           00224                 MOVWF   OPTION_REG
-                      00225 
-                      00226                 ; CONFIGURA A INTERRUPÇÃO
-                      00227                 ; INTCON: (ADDRESS 0Bh, 8Bh, 10Bh, 18Bh)
-                      00228                 ;       enable and flag bits for the
-                      00229                 ;       TMR0 register overflow, RB Port change and External
-                      00230                 ;       RB0/INT pin interrupts.
-                      00231                 ; GIE: Global Interrupt Enable bit                              = 1 (Enables all unmaske
-                            d interrupts)
-                      00232                 ; PEIE: Peripheral Interrupt Enable bit                 = x
-                      00233                 ; T0IE: TMR0 Overflow Interrupt Enable bit              = 1 (Enables the TMR0 interrupt)
-                      00234                 ; INTE: RB0/INT External Interrupt Enable bit   = x
-                      00235                 ; RBIE: RB Port Change Interrupt Enable bit             = x
-                      00236                 ; T0IF: TMR0 Overflow Interrupt Flag bit                = 0
-                      00237                 ; INTF: RB0/INT External Interrupt Flag bit             = x (The RB0/INT external interr
-                            upt did not occur)
-                      00238                 ; RBIF: RB Port Change Interrupt Flag bit               = x (None of the RB7:RB4 pins ha
-                            ve changed state)
-                      00239                 ; INTCON = 1010 0000
-0062   1283 1303      00240                 BANKSEL INTCON
-0064   30A0           00241                 MOVLW   B'10100000'
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  6
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
-0065   008B           00242                 MOVWF   INTCON
+0054   0098           00222                 MOVWF   TXSTA
+                      00223 
+                      00224                 ; RCSTA: RECEIVE STATUS AND CONTROL REGISTER (ADDRESS 18h)
+                      00225                 ; SPEN: Serial Port Enable bit                  = 1 (enable)
+                      00226                 ; RX9: 9-bit Receive Enable bit                 = 0 (sem 9º bit)
+                      00227                 ; SREN: Single Receive Enable bit               = 0 (N/A)
+                      00228                 ; CREN: Continuous Receive Enable bit   = 1 (continuous receive)
+                      00229                 ; ADDEN: Address Detect Enable bit              = 0 (N/A)
+                      00230                 ; FERR: Framing Error bit                               = 0 (read-only)
+                      00231                 ; OERR: Overrun Error bit                               = 0 (read-only)
+                      00232                 ; RX9D: 9th bit of Received Data                = 0 (read-only)
+                      00233                 ; RCSTA = 1001 0000
+0055   1283 1303      00234                 BANKSEL RCSTA
+0057   3090           00235                 MOVLW   B'10010000'
+0058   0098           00236                 MOVWF   RCSTA
+                      00237 
+                      00238                 ; SPBRG = 25
+                      00239                 ; calculado para 9600 bps
+0059   1683 1303      00240                 BANKSEL SPBRG
+005B   3019           00241                 MOVLW   D'25'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005C   0099           00242                 MOVWF   SPBRG
                       00243 
-                      00244                 ; FREQUENCIA DE INTERRUPÇAO DO TIMER
-                      00245                 ; (1MHz/4)/64[prescaler]
-                      00246                 ; -----------------------
-                      00247                 ;               (256 - TMR0)
-0066   1283 1303      00248                 BANKSEL TMR0
-0068   3083           00249                 MOVLW   D'131'
-0069   0081           00250                 MOVWF   TMR0
-006A   0008           00251         RETURN
-                      00252 
-006B                  00253 delay:
-006B   00A5           00254                 MOVWF   count_uh
-006C                  00255 delay_loop_uh:
-006C   30FF           00256                 MOVLW   0xff
-006D   00A4           00257                 MOVWF   count_h
-006E   1283 1303      00258                 BANKSEL PORTB
-0070   0086           00259                 MOVWF   PORTB
-                      00260                 ; BANKSEL       count_h
-0071   1283           00261                 BCF             STATUS, RP0
-0072   1303           00262                 BCF             STATUS, RP1
-0073                  00263 delay_loop_h:
-0073   30FF           00264                 MOVLW   0xff
-0074   00A3           00265                 MOVWF   count_l
-0075                  00266 delay_loop_l:
+                      00244                 ;BANKSEL        0
+005D   1283           00245                 BCF             STATUS,         RP0
+005E   1303           00246                 BCF             STATUS,         RP1
+005F   0008           00247         RETURN
+0060                  00248 leitura_serial:
+0060   1283 1303      00249                 BANKSEL PIR1
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00250                 ; registrador PIR1 contem as flags individuais de cada uma das
+                      00251                 ; interrupcoes perifericas
+                      00252                 ; bit RCIF indica se o buffer de entrada esta cheio
+                      00253                 ; (entrada serial)
+0062                  00254 espera_leitura_serial:
+0062   1E8C           00255                 BTFSS   PIR1,   RCIF                    ; se bit RCIF do registrador PIR1
+                      00256                                                                                 ; ou seja, se tem coisa 
+                            a ler
+0063   2???           00257                 GOTO    espera_leitura_serial   ; nao chegou byte
+0064   1283 1303      00258                 BANKSEL RCREG
+0066   081A           00259                 MOVF    RCREG, W                                ; chegou byte
+                      00260                 ;BANKSEL        0
+0067   1283           00261                 BCF             STATUS,         RP0
+0068   1303           00262                 BCF             STATUS,         RP1
+0069   00A2           00263                 MOVWF   byte_recebido_serial
+006A   0008           00264         RETURN
+                      00265 
+006B                  00266 leitura_serial_asinc:
+006B   1283 1303      00267                 BANKSEL PIR1
+                      00268                 ; registrador PIR1 contem as flags individuais de cada uma das
+                      00269                 ; interrupcoes perifericas
+                      00270                 ; bit RCIF indica se o buffer de entrada esta cheio
+                      00271                 ; (entrada serial)
+006D   1E8C           00272                 BTFSS   PIR1,   RCIF                    ; se bit RCIF do registrador PIR1
+                      00273                                                                                 ; ou seja, se tem coisa 
+                            a ler
+006E   2???           00274                         GOTO    end_leitura_serial_asinc
+006F   1283 1303      00275                 BANKSEL RCREG
+0071   081A           00276                 MOVF    RCREG, W                                ; chegou byte
+                      00277                 ;BANKSEL        byte_recebido_serial
+0072                  00278 end_leitura_serial_asinc:
+0072   1283           00279                 BCF             STATUS,         RP0
+0073   1303           00280                 BCF             STATUS,         RP1
+0074   00A2           00281                 MOVWF   byte_recebido_serial
+0075   0008           00282         RETURN
+                      00283 
+0076                  00284 envia_w_serial:
+0076   1283           00285                 BCF             STATUS, RP0
+0077   1303           00286                 BCF             STATUS, RP1
+0078   00A3           00287                 MOVWF   byte_enviar_serial      ; guarda w em byte_enviar_serial
+0079                  00288 escrita_serial:
+                      00289                 ; TXSTA:        transmit status and control register
+                      00290                 ; TRMT:  bit de buffer de escrita cheio
+0079   1683 1303      00291                 BANKSEL TXSTA
+                      00292                 ; caso ainda nao tenha enviado o que esta no buffer
+                      00293                 ; espera o envio (anterior)
+007B                  00294 espera_escrita_serial:
+                      00295                 ;TRMT: Transmit Shift Register Status bit
+                      00296                 ;1 = TSR empty
+                      00297                 ;0 = TSR full
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+007B   1C98           00298                 BTFSS   TXSTA, TRMT                             ; TRMT == 1? ;
+007C   2???           00299                 GOTO    espera_escrita_serial   ; buffer cheio, espere
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00300                 ;BANKSEL        byte_enviar_serial
+007D   1283           00301                 BCF             STATUS, RP0
+007E   1303           00302                 BCF             STATUS, RP1
+007F   0823           00303                 MOVF    byte_enviar_serial,     W       ; pega a variavel
+0080   1283 1303      00304                 BANKSEL TXREG
+0082   0099           00305                 MOVWF   TXREG                                   ; escreve a variavel para o buffer
+0083   0008           00306         RETURN
+                      00307 ; ------------------------------ SECAO TIMER -----------------------------
+0084                  00308 configura_timer:
+                      00309                 ; T = 1ms
+                      00310 
+                      00311                 ; Fint = 1000 Hz
+                      00312                 ; Prescaler = 2:1 (000)
+                      00313                 ; TRM0 = 131
+                      00314 
+                      00315                 ; Fint = 100 Hz
+                      00316                 ; Prescaler = 16:1 (011)
+                      00317                 ; TRM0 = 100
+                      00318 
+                      00319                 ; Fint = 10 Hz
+                      00320                 ; Prescaler = 256:1 (111)
+                      00321                 ; TRM0 = 158
+                      00322 
+                      00323                 ; ATIVA O TIMER
+                      00324                 ; OPTION_REG: control bits to configure
+                      00325                 ;       the TMR0 prescaler/WDT postscaler (single assign-
+                      00326                 ;       able register known also as the prescaler), the External
+                      00327                 ;       INT Interrupt, TMR0 and the weak pull-ups on PORTB.
+                      00328                 ;       (ADDRESS 81h, 181h)
+                      00329                 ;
+                      00330                 ; RBPU: PORTB Pull-up Enable bit                = 0 (PORTB pull-ups are enabled by indiv
+                            idual port latch values)
+                      00331                 ; INTEDG: Interrupt Edge Select bit             = 0 (Interrupt on falling edge of RB0/IN
+                            T pin)
+                      00332                 ; T0CS: TMR0 Clock Source Select bit    = 0 (Internal instruction cycle clock CLKOUT)
+                      00333                 ; T0SE: TMR0 Source Edge Select bit             = 0 (assincrono)
+                      00334                 ; PSA: Prescaler Assignment bit                 = 0 (Prescaler is assigned to the Timer0
+                             module)
+                      00335                 ; PS2:PS0: Prescaler Rate Select bits   = (1:2)
+                      00336                 ; PS2                                                                   = 0
+                      00337                 ; PS1                                                                   = 0
+                      00338                 ; PS0                                                                   = 0
+0084   1683 1303      00339                 BANKSEL OPTION_REG
+0086   3007           00340                 MOVLW   B'00000111'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0087   0081           00341                 MOVWF   OPTION_REG
+                      00342 
+                      00343                 ; FREQUENCIA DE INTERRUPÇAO DO TIMER
+                      00344                 ; (1MHz/4)/64[prescaler]
+                      00345                 ; -----------------------
+                      00346                 ;               (256 - TMR0)
+0088   1283 1303      00347                 BANKSEL TMR0
+008A   309D           00348                 MOVLW   D'157'
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+008B   0081           00349                 MOVWF   TMR0
+                      00350 
+                      00351                 ; CONFIGURA A INTERRUPÇÃO
+                      00352                 ; INTCON: (ADDRESS 0Bh, 8Bh, 10Bh, 18Bh)
+                      00353                 ;       enable and flag bits for the
+                      00354                 ;       TMR0 register overflow, RB Port change and External
+                      00355                 ;       RB0/INT pin interrupts.
+                      00356                 ;       NÃO ATIVO A INTERRUPCAO AINDA
+                      00357                 ; GIE: Global Interrupt Enable bit                              = 1 (Enables all unmaske
+                            d interrupts)
+                      00358                 ; PEIE: Peripheral Interrupt Enable bit                 = x
+                      00359                 ; T0IE: TMR0 Overflow Interrupt Enable bit              = 1 (Enables the TMR0 interrupt)
+                      00360                 ; INTE: RB0/INT External Interrupt Enable bit   = x
+                      00361                 ; RBIE: RB Port Change Interrupt Enable bit             = x
+                      00362                 ; T0IF: TMR0 Overflow Interrupt Flag bit                = 0
+                      00363                 ; INTF: RB0/INT External Interrupt Flag bit             = x (The RB0/INT external interr
+                            upt did not occur)
+                      00364                 ; RBIF: RB Port Change Interrupt Flag bit               = x (None of the RB7:RB4 pins ha
+                            ve changed state)
+                      00365                 ; INTCON = 1010 0000
+008C   1283 1303      00366                 BANKSEL INTCON
+008E   3080           00367                 MOVLW   B'10000000'
+008F   008B           00368                 MOVWF   INTCON
+                      00369 
+                      00370                 ; BANKSEL 0
+0090   1283           00371                 BCF     STATUS, RP0
+0091   1303           00372                 BCF     STATUS, RP1
+0092   0008           00373         RETURN
+0093                  00374 inicia_timer:
+                      00375                 ; DISPARA O TIMER
+0093   1283 1303      00376                 BANKSEL INTCON
+0095   168B           00377                 BSF     INTCON, T0IE
+                      00378 
+                      00379                 ; BANKSEL 0
+0096   1283           00380                 BCF     STATUS, RP0
+0097   1303           00381                 BCF     STATUS, RP1
+0098   0008           00382         RETURN
+                      00383 
+                      00384 ; -------------------------------- delay ----------------------------------------
+0099                  00385 delay:
+0099   00A6           00386                 MOVWF   count_uh
+009A                  00387 delay_loop_uh:
+009A   30FF           00388                 MOVLW   0xff
+009B   00A5           00389                 MOVWF   count_h
+009C                  00390 delay_loop_h:
+009C   30FF           00391                 MOVLW   0xff
+009D   00A4           00392                 MOVWF   count_l
+009E                  00393 delay_loop_l:
 Message[305]: Using default destination of 1 (file).
-0075   0BA3           00267                 DECFSZ  count_l
-0076   2???           00268                 GOTO    delay_loop_l
+009E   0BA4           00394                 DECFSZ  count_l
+009F   2???           00395                 GOTO    delay_loop_l
 Message[305]: Using default destination of 1 (file).
-0077   0BA4           00269                 DECFSZ  count_h
-0078   2???           00270                 GOTO    delay_loop_h
+00A0   0BA5           00396                 DECFSZ  count_h
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A1   2???           00397                 GOTO    delay_loop_h
 Message[305]: Using default destination of 1 (file).
-0079   0BA5           00271                 DECFSZ  count_uh
-007A   2???           00272                 GOTO    delay_loop_uh
-007B   0008           00273         RETURN
-                      00274 
-007C   2???           00275         GOTO    $       ; security loop forever
-3D39                  00276         END
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  7
+00A2   0BA6           00398                 DECFSZ  count_uh
+00A3   2???           00399                 GOTO    delay_loop_uh
+00A4   0008           00400         RETURN
+00A5   2???           00401         GOTO    $       ; security loop forever
+3D39                  00402         END
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 10
 
 
 SYMBOL TABLE
@@ -396,7 +542,7 @@ CSRC                              00000007
 D                                 00000005
 DATA_ADDRESS                      00000005
 DC                                00000001
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  8
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 11
 
 
 SYMBOL TABLE
@@ -455,7 +601,7 @@ PCFG3                             00000003
 PCL                               00000002
 PCLATH                            0000000A
 PCON                              0000008E
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE  9
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 12
 
 
 SYMBOL TABLE
@@ -514,7 +660,7 @@ RP0                               00000005
 RP1                               00000006
 RSEN                              00000001
 RX9                               00000006
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE 10
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 13
 
 
 SYMBOL TABLE
@@ -573,7 +719,7 @@ TMR2IF                            00000001
 TMR2ON                            00000002
 TOUTPS0                           00000003
 TOUTPS1                           00000004
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE 11
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 14
 
 
 SYMBOL TABLE
@@ -623,8 +769,8 @@ WR                                00000001
 WREN                              00000002
 WRERR                             00000003
 Z                                 00000002
-_.org_1_003A                      0000003A
-_.org_1_007C                      0000007C
+_.org_1_003F                      0000003F
+_.org_1_00A5                      000000A5
 _BODEN_OFF                        00003FBF
 _BODEN_ON                         00003FFF
 _BOREN_OFF                        00003FBF
@@ -632,7 +778,7 @@ _BOREN_ON                         00003FFF
 _CONFIG                           00002007
 _CPD_OFF                          00003FFF
 _CPD_ON                           00003EFF
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE 12
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 15
 
 
 SYMBOL TABLE
@@ -671,42 +817,48 @@ _WRT_ON                           00003FFF
 _XT_OSC                           00003FFD
 __16F873A                         00000001
 __DEBUG                           
-aritimetica                       00000024
+aritimetica                       0000004D
 aux                               00000020
-byte_enviar_serial                00000022
-byte_recebido_serial              00000021
-configura_serial                  0000003B
-configura_timer                   0000005E
-count_h                           00000024
-count_l                           00000023
-count_uh                          00000025
-counter                           00000028
-delay                             0000006B
-delay_loop_h                      00000073
-delay_loop_l                      00000075
-delay_loop_uh                     0000006C
-end_int                           00000004
-escrita_serial                    00000053
-espera_escrita_serial             00000055
-espera_leitura_serial             0000004A
-espera_valor                      00000017
-fase_alta                         00000030
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-29-2014  9:03:46         PAGE 13
+byte_enviar_serial                00000023
+byte_recebido_serial              00000022
+calcula_valor                     00000043
+configura_serial                  00000051
+configura_timer                   00000084
+count_h                           00000025
+count_l                           00000024
+count_uh                          00000026
+counter                           0000002C
+delay                             00000099
+delay_loop_h                      0000009C
+delay_loop_l                      0000009E
+delay_loop_uh                     0000009A
+end_int                           00000023
+end_leitura_serial_asinc          00000072
+envia_w_serial                    00000076
+escrita_serial                    00000079
+espera_escrita_serial             0000007B
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   9-30-2014  20:40:19         PAGE 16
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
-fase_baixa                        00000035
-leitura_serial                    00000048
-loop_pulsos                       00000027
-port_b_high_value                 00000029
-port_b_low_value                  0000002A
-pulsos_4                          00000027
-pulsos_4_end                      00000039
-start                             00000005
-th                                00000026
-tl                                00000027
+espera_leitura_serial             00000062
+espera_valor                      00000040
+fase_alta                         0000001A
+fase_baixa                        0000001F
+inicia_timer                      00000093
+leitura_serial                    00000060
+leitura_serial_asinc              0000006B
+mini_loop                         0000002A
+mini_loop_lenth                   0000002B
+port_b_high_value                 0000002D
+port_b_low_value                  0000002E
+portb_mirror                      00000021
+start                             00000024
+th                                00000027
+th_thresh_hold                    00000029
+tl                                00000028
 
 Errors   :     0
 Warnings :     0 reported,     0 suppressed

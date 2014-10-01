@@ -1,6 +1,5 @@
 #include<p16f873.inc> ; define o pic a utilizar
 ;#define	DEBUG
-;#define	SEMPRE_ESPERAR_VALOR_VALIDO
 
 	__config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_OFF & _WRT_OFF
 
@@ -36,18 +35,23 @@
 		BANKSEL	INTCON
 		BTFSS	INTCON,	T0IF
 		GOTO	end_int
+		
+		;BANKSEL	0
+		BCF		STATUS,		RP0
+		BCF		STATUS,		RP1
 
 		#ifdef DEBUG
 			MOVLW	0x02
 			CALL	delay
 		#endif
 
+		; se o mini_loop não é zero, finaliza a interrupção
 		DECFSZ	mini_loop,	1
 			GOTO	end_int
+		; reinicia o mini_loop
 		MOVF	mini_loop_lenth, 0
 		MOVWF	mini_loop
-
-		BANKSEL	TMR0 ; BAKSEL BANK 0
+		
 		MOVF	counter,	0
 		#ifdef DEBUG
 			CALL	envia_w_serial
@@ -58,6 +62,7 @@
 		BANKSEL	PORTB
 		MOVF	PORTB				,0
 
+		CALL	espera_valor ; espera valor não é preeptivo
 		; encotra a fase atual
 		MOVF	port_b_low_value,	0	; W = low_value
 		SUBWF	PORTB,				0	; W = W - PORTB
@@ -129,73 +134,76 @@ start:
 		MOVLW	0x00
 		CALL	envia_w_serial
 	#endif
-
-
-espera_valor:
-	; espera os dados da serial
+	
+	; o primeiro valor de th deve ser recebido pela serial sincronamente
+	; ou seja, a execução é parada até receber algo pela serial
+	; os demais são assincronos
 	CALL	leitura_serial
 	MOVF	byte_recebido_serial, 0
+	CALL	calcula_valor
 
-	; menor que 78, espera outro
-    SUBLW	D'77'
-	BTFSC	STATUS, C
-		#ifdef	SEMPRE_ESPERAR_VALOR_VALIDO
-			GOTO	espera_valor
-		#else
-			GOTO	aritimetica
-		#endif
-
-	; maior que 124, espera outro
-	MOVF	aux, w
-	SUBLW	D'124'
-	BTFSS	STATUS, C
-		#ifdef	SEMPRE_ESPERAR_VALOR_VALIDO
-			GOTO	espera_valor
-		#else
-			GOTO	aritimetica
-		#endif
-
-	; TH = valorRecebido
-	; aux = valorRecebido
-	MOVF	byte_recebido_serial, 0
-	MOVWF	aux
-	MOVWF	th
-aritimetica:
-	; faz aritimética
-	; 4) Então calcule TL =125-TH
-
-	MOVF	th , 0
-	SUBWF	th_thresh_hold,	0	; W= 125-TH
-	MOVWF	tl					; TL = W (125-TH)
-
-	; envia th e tl calculados
-	#ifdef DEBUG
-		MOVLW	0x54	; ascii T
-		CALL envia_w_serial
-		MOVLW	0x48	; ascii H
-		CALL envia_w_serial
-		MOVLW	0x00
-		CALL envia_w_serial
-		MOVF	th, 0
-		CALL envia_w_serial
-
-		MOVLW	0x54	; ascii T
-		CALL envia_w_serial
-		MOVLW	0x4C	; ascii L
-		CALL envia_w_serial
-		MOVLW	0x00
-		CALL envia_w_serial
-		MOVF	tl, 0
-		CALL envia_w_serial
-
-		MOVLW	0x00
-		CALL envia_w_serial
-	#endif
-	
 	; inicia o timer
 	CALL	inicia_timer
 
+	; fim da rotina principal
 	GOTO	$ ;security hold state loop
+
+espera_valor:
+		; espera os dados da serial
+		MOVF	th, 0						; leitura_serial_asinc faz "MOVWF byte_recebido" caso nao receba nada
+		CALL	leitura_serial_asinc
+		MOVF	byte_recebido_serial, 0
+
+calcula_valor:
+		; pega valor de w e testa ele para ser o novo th
+		; menor que 78, espera outro
+		SUBLW	D'77'
+		BTFSC	STATUS, C
+			GOTO	aritimetica
+
+		; maior que 124, espera outro
+		MOVF	aux, w
+		SUBLW	D'124'
+		BTFSS	STATUS, C
+			GOTO	aritimetica
+
+		; TH = valorRecebido
+		; aux = valorRecebido
+		MOVF	byte_recebido_serial, 0
+		MOVWF	aux
+		MOVWF	th
+aritimetica:
+		; faz aritimética
+		; 4) Então calcule TL =125-TH
+
+		MOVF	th , 0
+		SUBWF	th_thresh_hold,	0	; W= 125-TH
+		MOVWF	tl					; TL = W (125-TH)
+
+		; envia th e tl calculados
+		#ifdef DEBUG
+			MOVLW	0x54	; ascii T
+			CALL envia_w_serial
+			MOVLW	0x48	; ascii H
+			CALL envia_w_serial
+			MOVLW	0x00
+			CALL envia_w_serial
+			MOVF	th, 0
+			CALL envia_w_serial
+
+			MOVLW	0x54	; ascii T
+			CALL envia_w_serial
+			MOVLW	0x4C	; ascii L
+			CALL envia_w_serial
+			MOVLW	0x00
+			CALL envia_w_serial
+			MOVF	tl, 0
+			CALL envia_w_serial
+
+			MOVLW	0x00
+			CALL envia_w_serial
+		#endif
+	RETURN
 
 ; ------------------------------ SECAO SERIAL -----------------------------
 configura_serial:
@@ -232,6 +240,10 @@ configura_serial:
 		BANKSEL SPBRG
 		MOVLW   D'25'
 		MOVWF   SPBRG
+
+		;BANKSEL	0
+		BCF		STATUS,		RP0
+		BCF		STATUS,		RP1
 	RETURN
 leitura_serial:
 		BANKSEL PIR1
@@ -245,11 +257,30 @@ espera_leitura_serial:
 		GOTO	espera_leitura_serial	; nao chegou byte
 		BANKSEL RCREG
 		MOVF	RCREG, W				; chegou byte
-		;BANKSEL	byte_recebido_serial
+		;BANKSEL	0
 		BCF		STATUS,		RP0
 		BCF		STATUS,		RP1
 		MOVWF	byte_recebido_serial
 	RETURN
+
+leitura_serial_asinc:
+		BANKSEL PIR1
+		; registrador PIR1 contem as flags individuais de cada uma das
+		; interrupcoes perifericas
+		; bit RCIF indica se o buffer de entrada esta cheio
+		; (entrada serial)
+		BTFSS   PIR1,   RCIF			; se bit RCIF do registrador PIR1
+										; ou seja, se tem coisa a ler
+			GOTO	end_leitura_serial_asinc
+		BANKSEL RCREG
+		MOVF	RCREG, W				; chegou byte
+		;BANKSEL	byte_recebido_serial
+end_leitura_serial_asinc:
+		BCF		STATUS,		RP0
+		BCF		STATUS,		RP1
+		MOVWF	byte_recebido_serial
+	RETURN
+
 envia_w_serial:
 		BCF		STATUS,	RP0
 		BCF		STATUS,	RP1
