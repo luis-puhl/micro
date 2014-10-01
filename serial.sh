@@ -1,2 +1,2 @@
 #!/bin/sh
-gtkterm --port $1 &
+sudo gtkterm --port $1 &

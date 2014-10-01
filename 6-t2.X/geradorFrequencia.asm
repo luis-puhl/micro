@@ -1,5 +1,7 @@
 #include<p16f873.inc> ; define o pic a utilizar
 ;#define	DEBUG
+;#define	DEBUG_DELAY
+;#define	USE_MINILOOP
 
 	__config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_OFF & _WRT_OFF
 
@@ -25,6 +27,8 @@
 		counter
 		port_b_high_value
 		port_b_low_value
+		; setup do timer
+		TMR0_mirror
 	ENDC
 
 	ORG 0
@@ -35,22 +39,27 @@
 		BANKSEL	INTCON
 		BTFSS	INTCON,	T0IF
 		GOTO	end_int
+
+		; prepara o timer para a proxima chamada
+		CALL	inicia_timer
 		
 		;BANKSEL	0
 		BCF		STATUS,		RP0
 		BCF		STATUS,		RP1
 
-		#ifdef DEBUG
+		#ifdef DEBUG_DELAY
 			MOVLW	0x02
 			CALL	delay
 		#endif
 
-		; se o mini_loop não é zero, finaliza a interrupção
-		DECFSZ	mini_loop,	1
-			GOTO	end_int
-		; reinicia o mini_loop
-		MOVF	mini_loop_lenth, 0
-		MOVWF	mini_loop
+		#ifdef	USE_MINILOOP
+			; se o mini_loop não é zero, finaliza a interrupção
+			DECFSZ	mini_loop,	1
+				GOTO	end_int
+			; reinicia o mini_loop
+			MOVF	mini_loop_lenth, 0
+			MOVWF	mini_loop
+		#endif
 		
 		MOVF	counter,	0
 		#ifdef DEBUG
@@ -62,7 +71,63 @@
 		BANKSEL	PORTB
 		MOVF	PORTB				,0
 
-		CALL	espera_valor ; espera valor não é preeptivo
+		;CALL	espera_valor ; espera valor não é preeptivo
+espera_valor_int:
+		; espera os dados da serial
+		MOVF	th, 0						; leitura_serial_asinc faz "MOVWF byte_recebido" caso nao receba nada
+		CALL	leitura_serial_asinc
+		MOVF	byte_recebido_serial, 0
+
+calcula_valor_int:
+		; pega valor de w e testa ele para ser o novo th
+		; menor que 78, espera outro
+		SUBLW	D'77'
+		BTFSC	STATUS, C
+			GOTO	aritimetica
+
+		; maior que 124, espera outro
+		MOVF	aux, w
+		SUBLW	D'124'
+		BTFSS	STATUS, C
+			GOTO	aritimetica
+
+		; TH = valorRecebido
+		; aux = valorRecebido
+		MOVF	byte_recebido_serial, 0
+		MOVWF	aux
+		MOVWF	th
+aritimetica_int:
+		; faz aritimética
+		; 4) Então calcule TL =125-TH
+
+		MOVF	th , 0
+		SUBWF	th_thresh_hold,	0	; W= 125-TH
+		MOVWF	tl					; TL = W (125-TH)
+
+		; envia th e tl calculados
+		#ifdef DEBUG
+			MOVLW	0x54	; ascii T
+			CALL envia_w_serial
+			MOVLW	0x48	; ascii H
+			CALL envia_w_serial
+			MOVLW	0x00
+			CALL envia_w_serial
+			MOVF	th, 0
+			CALL envia_w_serial
+
+			MOVLW	0x54	; ascii T
+			CALL envia_w_serial
+			MOVLW	0x4C	; ascii L
+			CALL envia_w_serial
+			MOVLW	0x00
+			CALL envia_w_serial
+			MOVF	tl, 0
+			CALL envia_w_serial
+
+			MOVLW	0x00
+			CALL envia_w_serial
+		#endif
+
 		; encotra a fase atual
 		MOVF	port_b_low_value,	0	; W = low_value
 		SUBWF	PORTB,				0	; W = W - PORTB
@@ -103,6 +168,8 @@ start:
 	MOVLW	0x00
 	BANKSEL	TRISB
 	MOVWF	TRISB
+
+	MOVLW	0xFF
 	BANKSEL	PORTB
 	MOVWF	PORTB
 
@@ -296,7 +363,7 @@ espera_escrita_serial:
 		;1 = TSR empty
 		;0 = TSR full
 		BTFSS   TXSTA, TRMT				; TRMT == 1? ;
-		GOTO	espera_escrita_serial   ; buffer cheio, espere
+			GOTO	espera_escrita_serial   ; buffer cheio, espere
 		;BANKSEL	byte_enviar_serial
 		BCF		STATUS,	RP0
 		BCF		STATUS,	RP1
@@ -310,7 +377,7 @@ configura_timer:
 
 		; Fint = 1000 Hz
 		; Prescaler = 2:1 (000)
-		; TRM0 = 131
+		; TRM0 = 131157
 
 		; Fint = 100 Hz
 		; Prescaler = 16:1 (011)
@@ -337,7 +404,7 @@ configura_timer:
 		; PS1									= 0
 		; PS0									= 0
 		BANKSEL OPTION_REG
-		MOVLW   B'00000111'
+		MOVLW   B'00000010'
 		MOVWF   OPTION_REG
 
 		; FREQUENCIA DE INTERRUPÇAO DO TIMER
@@ -345,8 +412,13 @@ configura_timer:
 		; -----------------------
 		;		(256 - TMR0)
 		BANKSEL TMR0
-		MOVLW   D'157'
+		MOVLW   D'131'
 		MOVWF   TMR0
+
+		; BANKSEL 0
+		BCF	STATUS, RP0
+		BCF	STATUS, RP1
+		MOVWF	TMR0_mirror
 
 		; CONFIGURA A INTERRUPÇÃO
 		; INTCON: (ADDRESS 0Bh, 8Bh, 10Bh, 18Bh)
@@ -372,9 +444,16 @@ configura_timer:
 		BCF	STATUS, RP1
 	RETURN
 inicia_timer:
+		; RECONFIGURA O TMR0
+		MOVF	TMR0_mirror, 0
+		BANKSEL TMR0
+		MOVWF   TMR0
+		
 		; DISPARA O TIMER
 		BANKSEL INTCON
 		BSF	INTCON, T0IE
+		; LIMPA AS INTERRUPÇOES
+		BCF	INTCON, T0IF
 
 		; BANKSEL 0
 		BCF	STATUS, RP0

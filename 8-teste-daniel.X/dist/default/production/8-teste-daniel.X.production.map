@@ -1,0 +1,38 @@
+MPLINK 5.04, LINKER
+Linker Map File - Created Wed Oct  1 18:30:26 2014
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                   .org_1       code   0x000004    program   0x000028
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x000017      
+            23 out of 4230 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    ENVIA   0x000014    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+               ESPERADADO   0x000011    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+                   INICIO   0x000005    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                   INICIO   0x000005    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+               ESPERADADO   0x000011    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+                    ENVIA   0x000014    program     static /media/luis/184D-01FC/TESTE/TESTE78.asm
+
+
