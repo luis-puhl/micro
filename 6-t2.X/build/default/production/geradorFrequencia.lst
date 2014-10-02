@@ -1,4 +1,4 @@
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  1
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ Message[301]: MESSAGE: (Processor-header file mismatch.  Verify selected process
 0004   1283 1303      00039                 BANKSEL INTCON
 0006   1D0B           00040                 BTFSS   INTCON, T0IF
 0007   2???           00041                 GOTO    end_int
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  2
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0019   1C03           00091                 BTFSS   STATUS, C
 001A   2???           00092                         GOTO    aritimetica
                       00093 
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  3
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -175,7 +175,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0028   082D           00144                 MOVF    port_b_high_value, 0
 0029   0086           00145                 MOVWF   PORTB
                       00146 
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  4
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -234,7 +234,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
 0047   2???           00196         CALL    configura_timer
                       00197 
                       00198         #ifdef  DEBUG
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  5
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -293,7 +293,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 005C   00A8           00248                 MOVWF   tl                                      ; TL = W (125-TH)
                       00249 
                       00250                 ; envia th e tl calculados
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  6
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -352,7 +352,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
                       00300                 ; RCSTA = 1001 0000
 0062   1283 1303      00301                 BANKSEL RCSTA
 0064   3090           00302                 MOVLW   B'10010000'
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  7
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -411,7 +411,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
                       00350 
 0083                  00351 envia_w_serial:
 0083   1283           00352                 BCF             STATUS, RP0
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  8
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -470,7 +470,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
                       00400                 ; T0SE: TMR0 Source Edge Select bit             = 0 (assincrono)
                       00401                 ; PSA: Prescaler Assignment bit                 = 0 (Prescaler is assigned to the Timer0
                              module)
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE  9
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -529,7 +529,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
 00A3   082F           00448                 MOVF    TMR0_mirror, 0
 00A4   1283 1303      00449                 BANKSEL TMR0
 00A6   0081           00450                 MOVWF   TMR0
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 10
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 10
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -569,7 +569,7 @@ Message[305]: Using default destination of 1 (file).
 00B9   0008           00479         RETURN
 00BA   2???           00480         GOTO    $       ; security loop forever
 3D39                  00481         END
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 11
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 11
 
 
 SYMBOL TABLE
@@ -628,7 +628,7 @@ CSRC                              00000007
 D                                 00000005
 DATA_ADDRESS                      00000005
 DC                                00000001
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 12
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 12
 
 
 SYMBOL TABLE
@@ -687,7 +687,7 @@ PCFG3                             00000003
 PCL                               00000002
 PCLATH                            0000000A
 PCON                              0000008E
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 13
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 13
 
 
 SYMBOL TABLE
@@ -746,7 +746,7 @@ RP0                               00000005
 RP1                               00000006
 RSEN                              00000001
 RX9                               00000006
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 14
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 14
 
 
 SYMBOL TABLE
@@ -805,7 +805,7 @@ TMR2IE                            00000001
 TMR2IF                            00000001
 TMR2ON                            00000002
 TOUTPS0                           00000003
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 15
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 15
 
 
 SYMBOL TABLE
@@ -864,7 +864,7 @@ _BOREN_OFF                        00003FBF
 _BOREN_ON                         00003FFF
 _CONFIG                           00002007
 _CPD_OFF                          00003FFF
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 16
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 16
 
 
 SYMBOL TABLE
@@ -923,7 +923,7 @@ delay_loop_uh                     000000AF
 end_int                           0000002F
 end_leitura_serial_asinc          0000007F
 envia_w_serial                    00000083
-MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  19:13:42         PAGE 17
+MPASM 5.58  /HOME/LUIS/PROJECTS/MICRO/6-T2.X   10-1-2014  20:47:24         PAGE 17
 
 
 SYMBOL TABLE
