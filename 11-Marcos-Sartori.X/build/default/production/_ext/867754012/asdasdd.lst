@@ -1,0 +1,596 @@
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; T2 Microcontroladores
+                      00002 ; MARCOS VINICIUS ALVES SARTORI RA:1025139
+                      00003 
+                      00004 ; 1) Configurem um pino de saï¿½da digital (vc escolhe a porta) e a coloquem em estado alto (H)
+                      00005 ; 2) Faï¿½a TH = 100. Esse ï¿½ um valor apenas para inicializaï¿½ï¿½o. 
+                      00006 ; 3) Faï¿½a uma rotina que verifique se chegou algum nï¿½mero pela serial (use 9600 bps).
+                      00007 ; O nï¿½mero recebido deve estar entre 78 e 124 (inclusive).
+                      00008 ; Se ele nï¿½o estiver nessa faixa entï¿½o deverï¿½ ser ignorado.
+                      00009 ; Esse nï¿½mero ï¿½ chamado TH 
+                      00010 ; 4) Entï¿½o calcule TL =125-TH 
+                      00011 ; 5) Entï¿½o fique em loop gerando pulso altos e baixos no pino digital de saï¿½da.
+                      00012 ; O tempo do pulso alto serï¿½ TH ms (MILI-SEGUNDOS) e o tempo do pulso baixo serï¿½ TL ms (MILI-SEGUNDO
+                            S).
+                      00013 ; Use o TIMER para fazer a contagem de tempo em mili-segundos. = TL micro-segundos)
+                      00014 
+                      00015 #include<p16f873.inc> ; diretiva
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Aug 07 2014
+                      00005 ;  MPASM PIC16F873 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+Message[301]: MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+                      00501         LIST
+2007   3F39           00016                 __config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & 
+                            _DEBUG_OFF
+                      00017                 CBLOCK 0x20
+                      00018                                         ;tem de pulso alto(TH) e tempo de pulso baixo (TL)
+  00000020            00019                         TH                      
+  00000021            00020                         TL      
+  00000022            00021                         VALOR   ; valor recebido na serial
+                      00022                                         ; auxiliares para contagem do tempo             
+  00000023            00023                         aux
+                      00024                                         
+                      00025                 ENDC
+                      00026 
+                      00027                 ; comeï¿½ando programa
+                      00028                 ; linhas iniciais que ele lï¿½          
+                      00029                 ORG 0
+0000   2???           00030                 GOTO inicio
+                      00031                 ORG 4
+                      00032                 
+                      00033 
+                      00034                 ;interrupï¿½ï¿½o
+0004   1283 1303      00035                 BANKSEL INTCON
+0006   1D0B           00036                 BTFSS   INTCON, T0IF
+0007   2???           00037                 GOTO    fim_interrupcao
+                      00038                 
+                      00039                 ; LIMPA AS INTERRUPï¿½OES
+0008   1283 1303      00040                 BANKSEL INTCON
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000A   110B           00041                 BCF     INTCON, T0IF
+                      00042                 ;iniciando TIMER novamente
+000B   168B           00043                 BSF     INTCON, T0IE
+                      00044 
+000C   1283 1303      00045                 BANKSEL aux                             ; Sseleciono o banco de memoria de aux
+000E   03A3           00046                 DECF aux, 1                             ; decremento o aux para contar o tempo dos pulso
+                            s
+                      00047                 
+                      00048                 ; reconfigurando o TMR0
+000F   1283 1303      00049                 BANKSEL TMR0                    ; seleciono o banco de memoria de TMR0
+0011   3006           00050                 MOVLW D'6'                              ; coloco em w o valor de TMR0
+0012   0081           00051                 MOVWF TMR0                              ; passo para TMR0 o valor de w
+                      00052 
+                      00053 
+                      00054 
+0013                  00055 fim_interrupcao:
+0013   0009           00056                 RETFIE
+                      00057                 
+0014                  00058 inicio: ; inicio real
+                      00059                 
+                      00060                                                                 ; configuraï¿½ï¿½o do timer para mili se
+                            gundos
+                      00061                                                                 ; prescaler = 4  -> '001' resultando em 
+                            um TMR0 = 6
+0014   1683 1303      00062                 BANKSEL OPTION_REG              ; seleciono o banco de memï¿½ria de OPTION_REG
+0016   3001           00063                 MOVLW   B'00000001'              
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017   0081           00064                 MOVWF   OPTION_REG              ; efeutando configuraï¿½ï¿½o do OPTION_REG      
+0018   1283 1303      00065                 BANKSEL TMR0                    ; seleciono o banco de memoria de TMR0 
+001A   3006           00066                 MOVLW D'6'                              ; jogo o valor 6 no w
+001B   0081           00067                 MOVWF TMR0                              ; TMR0 recebe o valor de 6, para o timer funcion
+                            ar
+                      00068                                                                 
+                      00069                                                                 ; ativo GIE para as interrupï¿½ï¿½es glo
+                            bais
+001C   1283 1303      00070                 BANKSEL INTCON                  ; ativo o T0IE para funcionar a interrupï¿½ï¿½o de TMR0
+001E   30A0           00071                 MOVLW   B'10100000'             
+001F   008B           00072                 MOVWF   INTCON                  ; efetuo a configuraï¿½ï¿½o no INTCON
+                      00073 
+                      00074 
+0020   3000           00075                 MOVLW B'00000000'               ; coloca o pino RB1 como saï¿½da digital
+0021   1683 1303      00076                 BANKSEL TRISB                   ; seleciona o banco de memï¿½ria de TRISB
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0023   0086           00077                 MOVWF TRISB                             ; passa a configuraï¿½ï¿½o desejada para o TRISB
+                      00078                 
+                      00079                                                                 ;--------- configurar a porta serial ---
+                            --------------------------
+0024   3024           00080                 MOVLW B'00100100'               ; configurando o registrador de TXSTA - setando TXEN E B
+                            RGH
+0025   1683 1303      00081                 BANKSEL TXSTA                   ; seleciono o banco de memï¿½ria  de TXSTA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   0098           00082                 MOVWF TXSTA                             ; efetuo a configuraï¿½ï¿½o
+0028   3090           00083                 MOVLW B'10010000'               ; configuro o registrador de RX - para habilitar a 
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00084                                                                 ; porta serial e para continuar recebend
+                            o.      
+0029   1283 1303      00085                 BANKSEL RCSTA                   ; seleciono o banco de memï¿½ria  de RCSTA
+002B   0098           00086                 MOVWF RCSTA                             ; efetuo a configuraï¿½ï¿½o.    
+                      00087                 ; SPBRG = 25
+                      00088                 ; calculado para 9600 bps, como pedido no enunciado     
+002C   3019           00089                 MOVLW d'25'                               
+002D   1683 1303      00090                 BANKSEL SPBRG                   ; seleciono o banco de memï¿½ria de SPBRG
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002F   0099           00091                 MOVWF SPBRG                             ; efetuo a configuraï¿½ï¿½o
+                      00092                                                                 ;---------------------------------------
+                            -------------------------
+                      00093                 
+0030   0000           00094                 NOP
+0031   1283 1303      00095                 BANKSEL PORTB                   ; escolha do banco de memï¿½ria para PORTB
+0033   1486           00096                 BSF PORTB, RB1                  ; setando a uma em 1 (H), como pedido no enunciado
+0034   0000           00097                 NOP
+                      00098 
+0035                  00099 recebe_valor:                                   ;  fica recebendo algum valor entre 78 e 124 (inclusive)
+                             da serial
+                      00100                                                                 
+0035   0000           00101                 NOP
+0036   1283 1303      00102                 BANKSEL PIR1                    ; seleciono o banco de memï¿½ria de PIR1
+                      00103                                                                 ; para testar a serial:
+                      00104                                                                 ; se estiver em 1, chegou algo da serial
+                      00105                                                                 ; se estiver em 0, nï¿½o chegou nada    
+0038   1E8C           00106                 BTFSS PIR1, RCIF                ; bit RCIF indica se o buffer de entrada esta cheio
+0039   2???           00107                 GOTO recebe_valor               ; repete o loop para testar a serial novamente
+003A   0000           00108                 NOP
+                      00109                         
+003B   1283 1303      00110                 BANKSEL RCREG                   ; valor estï¿½ em um, pode fazer a leitura
+003D   081A           00111                 MOVF RCREG, W                   ; copio para o W o valor recebido
+003E   1283 1303      00112                 BANKSEL VALOR                   ; seleciono o banco de VALOR
+0040   00A2           00113                 MOVWF   VALOR                   ; copio o valor recebido para VALOR, por seguranï¿½a.
+                      00114                 
+0041   0000           00115                 NOP
+0042   1283 1303      00116                 BANKSEL TH                              ; seleciono o banco da variï¿½vel TH
+0044   00A0           00117                 MOVWF   TH                              ; coloco o valor vindo da serial na variï¿½vel T
+                            H
+                      00118                         
+                      00119                 ; teste do valor recebido
+                      00120                 ; verifica se ele esta entre 78 e 124
+                      00121                 
+0045   0000           00122                 NOP
+0046   3C4E           00123                 SUBLW d'78'                             ; operaï¿½ï¿½o: w = 78 - w
+0047   1283 1303      00124                 BANKSEL STATUS                  ; seleciono o banco de memï¿½ria de STATUS
+0049   1803           00125                 BTFSC STATUS, C                 ; verifico se a operaï¿½ï¿½o deixou o bit C em 0 (se sim
+                            , w > 78)
+004A   2???           00126                 GOTO recebe_valor               ; w < 78, entï¿½o recebe outro valor
+004B   0000           00127                 NOP                                             ; sucesso, w > 78
+                      00128                 
+004C   3E4E           00129                 ADDLW d'78'                             ; volto o valor de w, para testar se w < 124
+004D   3C7C           00130                 SUBLW d'124'                    ; operaï¿½ï¿½o: w = 124 - w
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004E   1283 1303      00131                 BANKSEL STATUS                  ; seleciono o banco de memï¿½ria de STATUS
+0050   1C03           00132                 BTFSS STATUS, C                 ; verifico se a operaï¿½ï¿½o deixou o bit C em 1 (se nï¿
+                            ½o, w > 124)
+0051   2???           00133                 GOTO recebe_valor               ; w > 124, entï¿½o recebe outro valor
+0052   0000           00134                 NOP                                             ; sucesso, w < 124
+                      00135                 
+                      00136                 ; agora vem o cï¿½lculo do TL do enunciado
+                      00137                 
+0053   0000           00138                 NOP
+0054   1283 1303      00139                 BANKSEL TH                              ; seleciono o banco de memï¿½ria de TH
+0056   0820           00140                 MOVF TH, W                              ; passo o valor de TH para o w
+0057   3C7D           00141                 SUBLW d'125'                    ; w = 125 - TH.
+0058   1283 1303      00142                 BANKSEL TL                              ; seleciono o banco de memï¿½ria de TL
+005A   00A1           00143                 MOVWF TL                                ; passo para TL o resultado da operaï¿½ï¿½o acim
+                            a
+                      00144 
+005B                  00145 manda_pulsos:                                   ; loop dos pulsos de TH e TL
+                      00146                                                                 ; alternando o valor do pino de saï¿½da 
+                            utilizado
+                      00147                                                                 ; porta RB1
+                      00148                 
+                      00149                 ;inicio do pulso baixo
+005B   1086           00150                 BCF PORTB, RB1                  ; seto em baixo (0) a porta RB1
+005C   1283 1303      00151                 BANKSEL aux                             ; seleciono o banco de memï¿½ria da variï¿½vel a
+                            uxiliar (aux)
+005E   0821           00152                 MOVF TL,0                               ; passo o valor de TL para w 
+005F   00A3           00153                 MOVWF aux                               ; aux = w , para fazer a contagem do tempo      
+                                    
+                      00154 
+                      00155 
+0060                  00156 tl_loop:
+0060   0000           00157                 NOP
+0061   1283 1303      00158                 BANKSEL aux                             ; seleciono o banco de memï¿½ria da variï¿½vel a
+                            uxiliar (aux)
+0063   0B23           00159                 DECFSZ aux, 0                   ; testo se aux  ï¿½ 0 para trocar o pulso
+0064   2???           00160                 GOTO tl_loop                    ; se nï¿½o, volte para o loop
+                      00161                 
+0065   0000           00162                 NOP                                             ; sucesso, hora de gerar um pulso baixo
+0066   1283 1303      00163                 BANKSEL PORTB                   ; seleciono o banco de memï¿½ria do pino que queremos al
+                            terar
+                      00164                 
+                      00165                 ;inicio do pulso alto
+0068   1486           00166                 BSF PORTB, RB1                  ; seto em alto(1) a porta RB1
+0069   1283 1303      00167                 BANKSEL aux                             ; seleciono o banco de memï¿½ria da variï¿½vel a
+                            uxiliar(aux)
+006B   0820           00168                 MOVF TH,0                               ; passo o valor de TH para o w
+006C   00A3           00169                 MOVWF aux                               ; passo o valor de w para aux, para contagem de 
+                            tempo
+                      00170 
+006D                  00171 th_loop:
+006D   0000           00172                 NOP
+006E   1283 1303      00173                 BANKSEL aux                             ; seleciono o banco de memï¿½ria da variï¿½vel a
+                            uxiliar de TH
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0070   0B23           00174                 DECFSZ aux, 0                   ; testo se o aux ï¿½ 0 para trocar o pulso
+0071   2???           00175                 GOTO th_loop                    ; se nï¿½o, volte para o loop
+                      00176                 
+0072   2???           00177                 GOTO manda_pulsos               ; volte a gerar um pulso baixo apï¿½s ter gerado este pu
+                            lso alto
+                      00178                 
+3F39                  00179         END
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TH                                00000020
+TL                                00000021
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+VALOR                             00000022
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+MPASM 5.58  /MEDIA/LUIS/A2A0-F26C/ASDASDD.AS   10-2-2014  22:12:13         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_WRT_OFF                          00003DFF
+_WRT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F873A                         00000001
+aux                               00000023
+fim_interrupcao                   00000013
+inicio                            00000014
+manda_pulsos                      0000005B
+recebe_valor                      00000035
+th_loop                           0000006D
+tl_loop                           00000060
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     5 reported,     0 suppressed
+
+

@@ -1,0 +1,46 @@
+MPLINK 5.04, LINKER
+Linker Map File - Created Thu Oct  2 22:12:13 2014
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000002
+                   .cinit    romdata   0x000001    program   0x000004
+                   .org_1       code   0x000004    program   0x0000de
+.config_2007_BUILD/DEFAULT/PRODUCTION/_EXT/86       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000002      
+                            0x000004    0x000072      
+                            0x002007    0x002007      
+            115 out of 4230 program addresses used, program memory utilization is 2%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+          fim_interrupcao   0x000013    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                   inicio   0x000014    program     static /media/luis/A2A0-F26C/asdasdd.asm
+             manda_pulsos   0x00005b    program     static /media/luis/A2A0-F26C/asdasdd.asm
+             recebe_valor   0x000035    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                  th_loop   0x00006d    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                  tl_loop   0x000060    program     static /media/luis/A2A0-F26C/asdasdd.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+          fim_interrupcao   0x000013    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                   inicio   0x000014    program     static /media/luis/A2A0-F26C/asdasdd.asm
+             recebe_valor   0x000035    program     static /media/luis/A2A0-F26C/asdasdd.asm
+             manda_pulsos   0x00005b    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                  tl_loop   0x000060    program     static /media/luis/A2A0-F26C/asdasdd.asm
+                  th_loop   0x00006d    program     static /media/luis/A2A0-F26C/asdasdd.asm
+
+

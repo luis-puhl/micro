@@ -1,0 +1,5 @@
+Message[301] /home/luis/bin/mplabx/mpasmx/p16f873.inc 34 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+Message[302] /media/luis/A2A0-F26C/asdasdd.asm 64 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /media/luis/A2A0-F26C/asdasdd.asm 77 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /media/luis/A2A0-F26C/asdasdd.asm 82 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /media/luis/A2A0-F26C/asdasdd.asm 91 : Register in operand not in bank 0.  Ensure that bank bits are correct.

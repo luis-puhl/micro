@@ -1,0 +1,600 @@
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;Nome: Jo�o Paulo de Vasconcelos
+                      00002 ;RA: 121024571
+                      00003 ;Prof Perea
+                      00004 
+                      00005 
+                      00006 ;Configura��o uma porta de sa�da digital e a coloquem em estado H
+                      00007 ;Fa�a uma rotina fique em loop at� receber um n�mero espec�fico do PC, o qual deve estar entre
+                      00008 ;78 e 124 (inclusive). 
+                      00009 ;Esse n�mero � chamado TH, calcule TL =125-TH
+                      00010 ;Ent�o fique em loop gerando pulso altos e baixos no pino digital de sa�da. O tempo do 
+                      00011 ;pulso alto ser� TH micro-segundos e o tempo do pulso baixo ser� TL micro-segundos.
+                      00012 
+                      00013 #include <p16f873a.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Aug 07 2014
+                      00005 ;  MPASM PIC16F873A processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2014 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00527         LIST
+                      00014 
+2007   3F39           00015         __config _XT_OSC & _WDT_OFF & _PWRTE_OFF & _CP_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _DEBUG_O
+                            FF
+                      00016 
+                      00017         #define TM 0x20                         ;tempo
+                      00018         #define TH 0X21                         ;high
+                      00019         #define TL 0x22                         ;low
+                      00020 
+                      00021         ORG 0
+0000   2???           00022         GOTO    INICIO
+                      00023 
+                      00024 ;Interrupcao
+                      00025 ;Timer e ativado assim que configurado, e fica no aguardo de receber um valor para TM (Tempo)
+                      00026         ORG 4
+                      00027 
+0004   1283 1303      00028         BANKSEL INTCON                          ;seleciona o banco de INTCON
+0006   1D0B           00029         BTFSS INTCON, T0IF                      ;T0IF = 1 -> Houve interrupcao do timer
+0007   2???           00030         GOTO SAIDA                              ;Verifica se houve interrupcao
+0008   0000           00031                 NOP
+0009   1283 1303      00032         BANKSEL TM                              ;seleciona o banco de TM (tempo)
+000B   03A0           00033         DECF TM,1                               ;decrementa o tempo at� zero
+000C   1283 1303      00034         BANKSEL INTCON                          ;seleciona o banco de INTCON
+000E   110B           00035         BCF INTCON, T0IF                        ;T0IF = 0 
+000F   1283 1303      00036         BANKSEL TMR0                            ;seleciona o banco de TMR0
+0011   3006           00037         MOVLW D'6'                              ;FINT = (clock/4)/(256-TMR0)
+                      00038                                                 ;1000 = (1M/4)/(256-TMR0) -> 1 = (1000/4)/(256-TMR0)
+                      00039                                                 ;TMR0 = 6
+0012                  00040 SAIDA:
+0012   0009           00041         RETFIE                                  ;sai da interrupcao
+                      00042 
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0013                  00043 INICIO:
+                      00044 ;Configuracoes para uso do timer
+0013   1683 1303      00045         BANKSEL OPTION_REG                      ;seleciona o banco de OPTION_REG
+0015   3001           00046         MOVLW B'00000001'                       ;diz quais portas serao configuradas
+                      00047                                                 ;prescaler
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0016   0081           00048         MOVWF OPTION_REG                        ;move o valor de W para F (endereco de memoria)
+0017   1283 1303      00049         BANKSEL INTCON                          ;seleciona o banco de INTCON
+0019   30A0           00050         MOVLW B'10100000'                       ;diz quais portas serao configuradas
+                      00051                                                 ;7: GIE, Bit de habilita��o da interrup��o globa
+                            l
+                      00052                                                 ;5: T0IE, Bit de habita��o da interrup��o de ove
+                            rflow do                                                        
+                      00053                                                 ;Timer 0 (TMR0),
+001A   008B           00054         MOVWF INTCON                            ;move o valor de W para F (endere�o de mem�ria)
+001B   1283 1303      00055         BANKSEL TMR0                            ;seleciona o banco de TMR0
+001D   3006           00056         MOVLW D'6'                              ;FINT = (clock/4)/(256-TMR0)
+                      00057                                                 ;1000 = (1M/4)/(256-TMR0) -> 1 = (1000/4)/(256-TMR0)
+                      00058                                                 ;TMR0 = 6
+001E   0081           00059         MOVWF TMR0                              ;move o valor de 6 para configurar o TMR0
+                      00060 ;FINT = Quantas interrup�oes por segundo (1000)
+                      00061 
+                      00062 ; ------------------------------------------------------------ Configuracao ----------------------------
+                            ------------------------------
+                      00063 ;Configuracoes para uso de TXSTA, RCSTA e SPBRG, para selecionar o uso das funcoes do PIC
+                      00064 
+001F   1683 1303      00065         BANKSEL TXSTA                           ;seleciona o banco de TXSTA (transmissao)
+0021   3026           00066         MOVLW   B'00100110'                     ;diz quais portas ser�o configuradas, em W
+                      00067                                                 ;3(serial): habilita transmissao 
+                      00068                                                 ;6: calculo BPS
+                      00069                                                 ;7: TRMT (buffer vazio)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0022   0098           00070         MOVWF   TXSTA                           ;move o valor de W para F (endere�o de mem�ria)
+0023   1283 1303      00071         BANKSEL RCSTA                           ;seleciona o banco de RCSTA (recepcao)
+0025   3090           00072         MOVLW   B'10010000'                     ;diz quais portas ser�o configuradas, em W
+                      00073                                                 ;1: RX9 (uso do 9 bit para paridade)
+                      00074                                                 ;4: CREN (habilitado para recepcao sequencial)
+0026   0098           00075         MOVWF   RCSTA                           ;move o valor de W para F (endere�o de mem�ria)
+0027   1683 1303      00076         BANKSEL SPBRG                           ;seleciona o Banco de SPBRG
+0029   3019           00077         MOVLW   D'25'                           ;coloca o valor 25 em W (W=25)
+                      00078                                                 ;SPBRG = (4M/16*BPS) - 1 = 25,042 = 25 [BPS = 9600      
+                                                                            
+                      00079                                                 ;(Quanto mais alto = maior numero de erros)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002A   0099           00080         MOVWF   SPBRG                           ;move o valor de W para F (endere�o de mem�ria)
+002B   1683 1303      00081         BANKSEL TRISB                           ;seleciona o Banco TRISB
+002D   3000           00082         MOVLW   B'00000000'                     ;diz quais portas ser�o ativadas, em W
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002E   0086           00083         MOVWF   TRISB                           ;move o valor de W para F (endere�o de mem�ria)
+002F   1283 1303      00084         BANKSEL PORTB                           ;seleciona o banco de PORTB
+0031   1686           00085         BSF     PORTB,RB5                       ;SET o RB5 ("tensao alta")
+                      00086 
+                      00087 ; ------------------------------------------------------------------------------------------------------
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            ------------------------------------
+                      00088 ;Aguarda a espera do recebimento de dados enviadas pelo PC
+                      00089 ;Em seguida realizar a conta de TL
+                      00090 
+0032                  00091 ESPERA:
+0032   1283 1303      00092         BANKSEL PIR1                            ;seleciona o Banco de PIR1 (Registrador de indicadores  
+                                                                    
+                      00093                                                 ;de interrupcao)
+                      00094                                                 ;se for 1, chegou algo
+                      00095                                                 ;se for 0, buffer vazio
+0034   1E8C           00096         BTFSS   PIR1,5                          ;ve se o bit 5 est� setado
+0035   2???           00097                 GOTO    ESPERA                  ;se nao, volta para espera
+0036   1283 1303      00098                 BANKSEL RCREG                   ;seleciona o banco de RCREG (RCREG: registrador de      
+                                                    
+                      00099                                                 ;recep��o de dados)
+0038   081A           00100                 MOVF    RCREG,W                 ;se sim, move o que estiver no buffer para W
+0039   1283 1303      00101         BANKSEL TH                              ;seleciona o banco de TH
+003B   00A1           00102         MOVWF TH                                ;move W para TH
+003C   3C4D           00103         SUBLW   D'77'                           ;W = 77-W
+003D   1283 1303      00104         BANKSEL STATUS                          ;seleciona o banco de STATUS
+003F   1803           00105         BTFSC   STATUS,C                        ;verifica se o bit do carry vale 0 (maior que 77)
+0040   2???           00106                         GOTO ESPERA             ;se nao for igual, volta para espera 
+0041   0000           00107                         NOP                     ;se for igual, continua
+0042   1283 1303      00108         BANKSEL TH                              ;seleciona o banco de TH
+0044   0821           00109         MOVF TH,W                               ;move th para W
+0045   3C7C           00110         SUBLW   D'124'                          ;W = 124-W
+0046   1283 1303      00111         BANKSEL STATUS                          ;seleciona o banco de STATUS
+0048   1C03           00112         BTFSS   STATUS,C                        ;verifica se o bit do carry vale 1 (menor ou igual a 124
+                            )
+0049   2???           00113                         GOTO ESPERA             ;se nao for menor ou igual, volta para espera 
+004A   0000           00114                         NOP                     ;se for igual ou menor, continua
+                      00115 ;se o programa chegar ate aqui o valor esta entre 78 e 124
+                      00116 ;CARRY: Se o valor do carry na subtracao estiver em 
+                      00117 ;1: O Numero e menor ou igual (valor matematico positivo ou 0)
+                      00118 ;0: O Numero maior (valor matematico negativo) 
+                      00119 
+004B                  00120 CALCULO_TL:
+004B   1283 1303      00121         BANKSEL TH                              ;seleciona o banco de TH
+004D   0821           00122         MOVF TH,W                               ;move th para w
+004E   3C7D           00123         SUBLW   D'125'                          ;W = 125-W
+004F   1283 1303      00124         BANKSEL TL                              ;seleciona o Banco de TL
+0051   00A2           00125         MOVWF TL                                ;move o resultado em W para a variavel TL
+                      00126 
+                      00127 ;-------------------------------------------------------------------------------------------------------
+                            ------------------------------------
+                      00128 ;parte final: ociloscopio
+                      00129 ;o valor da porta de saida comeca setado
+                      00130 ;move o valor para a variavel tm (tempo) para ser usado no ORG4
+                      00131 
+0052                  00132 LOOP:
+0052   1283 1303      00133         BANKSEL TH                              ;seleciona o Banco de TH
+0054   0821           00134         MOVF TH, W                              ;move o valor de TH para W
+0055   1283 1303      00135         BANKSEL TM                              ;seleciona o Banco de TM
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0057   00A0           00136         MOVWF TM                                ;move o valor de W para TM
+0058   1283 1303      00137         BANKSEL PORTB                           ;seleciona o banco de PORTB
+005A   1686           00138         BSF     PORTB,RB5                       ;SET o RB7 ("tensao alta")
+                      00139 ;Nao e possivel mover de TH para TM, por isso, usa-se W 
+                      00140 
+005B                  00141 ALTO:
+005B   3000           00142         MOVLW D'0'                              ;Coloca o valor de 0 em W para teste se o contador de   
+                                                                    
+                      00143                                                 ;tempo deu 0.
+005C   1283 1303      00144         BANKSEL TM                              ;seleciona o banco da variavel TM
+005E   0620           00145         XORWF TM,W                              ;Verifica se o TM chegou a 0. Se chegar o FLAG fica 1
+005F   1283 1303      00146         BANKSEL STATUS                          ;seleciona o banco de STATUS
+0061   1D03           00147         BTFSS   STATUS,Z                        ;verifica se a flag esta em 1 (setado)
+0062   2???           00148                 GOTO ALTO                       ;se Z = 0 entao retorna para Alto
+0063   0000           00149                 NOP
+                      00150 ;fica em loop ate o Flag Z = 1 [tensao alta]
+                      00151 ;depois continua para a parte de tensao baixa
+                      00152 
+0064   1683 1303      00153         BANKSEL TRISB                           ;seleciona o Banco TRISB
+0066   3000           00154         MOVLW   B'00000000'                     ;diz quais portas ser�o configuradas, em W
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0067   0086           00155         MOVWF   TRISB                           ;move o valor de W para F (endere�o de mem�ria)
+0068   1283 1303      00156         BANKSEL PORTB                           ;seleciona o banco de PORTB
+006A   1286           00157         BCF     PORTB,RB5                       ;Limpa (Clear) o RB5 ("tensao baixa") = 0
+                      00158 
+006B   1283 1303      00159         BANKSEL TL                              ;seleciona o banco de TL
+006D   0822           00160         MOVF TL, W                              ;move o valor de TL para W
+006E   1283 1303      00161         BANKSEL TM                              ;seleciona o bando de TM
+0070   00A0           00162         MOVWF TM                                ;Move o valor de W para TM
+                      00163 ;Nao e possivel mover de TL para TM, por isso, usa-se W
+                      00164 
+0071                  00165 BAIXO:
+0071   3000           00166         MOVLW D'0'                              ;Coloca o valor de 0 em W para teste se o contador de   
+                                                                            
+                      00167                                                 ;tempo deu 0.
+0072   1283 1303      00168         BANKSEL TM                              ;seleciona o banco de TM
+0074   0620           00169         XORWF TM,W                              ;Verifica se o TM chegou a 0. Se chegar o FLAG fica 1.
+0075   1283 1303      00170         BANKSEL STATUS                          ;seleciona o banco de STATUS
+0077   1D03           00171         BTFSS STATUS,Z                          ;verifica se a flag (z) esta em 1 (setado)
+0078   2???           00172                 GOTO BAIXO                      ;se o flag Z = 0 retorna para Baixo , se nao continua
+0079   0000           00173                 NOP                             ;continua
+                      00174 ;O programa ficara em loop de transmissao de tensao
+007A   2???           00175         GOTO LOOP                               ;Volta para LOOP
+                      00176 
+3F39                  00177         END
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ALTO                              0000005B
+BAIXO                             00000071
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CALCULO_TL                        0000004B
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CHS2                              00000005
+CIS                               00000003
+CKE                               00000006
+CKP                               00000004
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+ESPERA                            00000032
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+INDF                              00000000
+INICIO                            00000013
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+IRP                               00000007
+LOOP                              00000052
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SAIDA                             00000012
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TH                                0X21
+TL                                0x22
+TM                                0x20
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+MPASM 5.58   /MEDIA/LUIS/SONY/T2 MICRO/2.ASM   10-2-2014  21:58:31         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F873A                         00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     5 reported,     0 suppressed
+
+
