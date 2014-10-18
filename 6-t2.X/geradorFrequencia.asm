@@ -1,5 +1,5 @@
-#include<p16f873.inc> ; define o pic a utilizar
-;#define	DEBUG
+#include<p16f873a.inc> ; define o pic a utilizar
+;       #define	DEBUG
 ;#define	DEBUG_DELAY
 ;#define	USE_MINILOOP
 
@@ -41,7 +41,24 @@
 		GOTO	end_int
 
 		; prepara o timer para a proxima chamada
-		CALL	inicia_timer
+		;CALL	inicia_timer
+;inicia_timer:
+		; RECONFIGURA O TMR0
+		MOVF	TMR0_mirror, 0
+		BANKSEL TMR0
+		MOVWF   TMR0
+
+		; DISPARA O TIMER
+		BANKSEL INTCON
+		BSF	INTCON, T0IE
+		; LIMPA AS INTERRUPÇOES
+		BCF	INTCON, T0IF
+
+		; BANKSEL 0
+		BCF	STATUS, RP0
+		BCF	STATUS, RP1
+	;RETURN
+
 		
 		;BANKSEL	0
 		BCF		STATUS,		RP0
